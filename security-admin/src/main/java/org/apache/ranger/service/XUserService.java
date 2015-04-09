@@ -111,11 +111,11 @@ public class XUserService extends XUserServiceBase<XXUser, VXUser> {
 				SearchField.DATA_TYPE.INTEGER, SearchField.SEARCH_TYPE.FULL ));
 
 		
-		createdByUserId = new Long(PropertiesUtil.getIntProperty(
-				"xa.xuser.createdByUserId", 1));
+//		createdByUserId = new Long(PropertiesUtil.getIntProperty("xa.xuser.createdByUserId", 1));
+		createdByUserId = new Long(PropertiesUtil.getIntProperty("ranger.xuser.createdByUserId", 1));
 
-		hiddenPasswordString = PropertiesUtil.getProperty("xa.password.hidden",
-				"*****");
+//		hiddenPasswordString = PropertiesUtil.getProperty("xa.password.hidden","*****");
+		hiddenPasswordString = PropertiesUtil.getProperty("ranger.password.hidden","*****");
 
 		sortFields.add(new SortField("name", "obj.name",true,SortField.SORT_ORDER.ASC));
 		
@@ -232,8 +232,8 @@ public class XUserService extends XUserServiceBase<XXUser, VXUser> {
 			if (xXPortalUser != null) {
 				vObj.setFirstName(xXPortalUser.getFirstName());
 				vObj.setLastName(xXPortalUser.getLastName());
-				vObj.setPassword(PropertiesUtil
-						.getProperty("xa.password.hidden"));
+//				vObj.setPassword(PropertiesUtil.getProperty("xa.password.hidden"));
+				vObj.setPassword(PropertiesUtil.getProperty("ranger.password.hidden"));
 				String emailAddress = xXPortalUser.getEmailAddress();
 				if (emailAddress != null
 						&& stringUtil.validateEmail(emailAddress)) {

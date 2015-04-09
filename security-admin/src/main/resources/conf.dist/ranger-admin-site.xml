@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+<!DOCTYPE configuration [<!ELEMENT configuration (property*) >
+<!ELEMENT property (name, value, description? ) >
+<!ELEMENT name (#PCDATA) >
+<!ELEMENT value (#PCDATA) >
+<!ELEMENT description  (#PCDATA) >
+<!ATTLIST entry name CDATA #REQUIRED>
+<!ATTLIST entry value CDATA #REQUIRED>] >
+
+<configuration>
+<!-- #Hibernate/JPA settings -->
+	<property>
+		<name>ranger.jdbc.dialect</name>
+		<value>org.eclipse.persistence.platform.database.MySQLPlatform</value>
+		<description></description>
+	</property>
+<!-- # DB Info -->
+	<property>
+		<name>ranger.jdbc.driver</name>
+		<value>net.sf.log4jdbc.DriverSpy</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.jdbc.url</name>
+		<value>jdbc:log4jdbc:mysql://localhost:3306/xa_db</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.jdbc.user</name>
+		<value>xaadmin</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.jdbc.password</name>
+		<value>xaadmin</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.webapp.url.root</name>
+		<value>http://localhost:8080/security-admin-web</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.webapp.contextName</name>
+		<value>/</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.jpa.showsql</name>
+		<value>false</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.env.local</name>
+		<value>true</value>
+		<description></description>
+	</property>	
+	<property>
+		<name>ranger.jdbc.maxPoolSize</name>
+		<value>40</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.jdbc.minPoolSize</name>
+		<value>5</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.jdbc.initialPoolSize</name>
+		<value>5</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.jdbc.maxIdleTime</name>
+		<value>300</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.jdbc.maxStatements</name>
+		<value>500</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.jdbc.preferredTestQuery</name>
+		<value>select 1;</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.jdbc.idleConnectionTestPeriod</name>
+		<value>60</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.jdbc.credential.alias</name>
+		<value>mykey3</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.jdbc.credential.provider.path</name>
+		<value>/tmp/mykey3.jceks</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.logs.base.dir</name>
+		<value>user.home</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.scheduler.enabled</name>
+		<value>true</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.audit.solr.url</name>
+		<value></value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.audit.store</name>
+		<value>db</value>
+		<description></description>
+	</property>
+<!-- # DB Info for audit_DB -->
+	<property>
+		<name>ranger.auditDB.jdbc.dialect</name>
+		<value>org.eclipse.persistence.platform.database.MySQLPlatform</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.auditDB.jdbc.driver</name>
+		<value>net.sf.log4jdbc.DriverSpy</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.auditDB.jdbc.url</name>
+		<value>jdbc:log4jdbc:mysql://localhost:3306/xasecure</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.auditDB.jdbc.user</name>
+		<value>xalogger</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.auditDB.jdbc.password</name>
+		<value>xalogger</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.auditDB.jdbc.credential.alias</name>
+		<value>mykey4</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.auditDB.jdbc.credential.provider.path</name>
+		<value>/tmp/mykey4.jceks</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.http.enabled</name>
+		<value>true</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.authentication.method</name>
+		<value>NONE</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.ldap.url</name>
+		<value>ldap://</value>
+		<description></description>
+	</property>
+		<property>
+		<name>ranger.ldap.user.dnpattern</name>
+		<value>uid={0},ou=users,dc=xasecure,dc=net</value>
+		<description></description>
+	</property>
+		<property>
+		<name>ranger.ldap.group.searchbase</name>
+		<value>ou=groups,dc=xasecure,dc=net</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.ldap.group.searchfilter</name>
+		<value>(member=uid={0},ou=users,dc=xasecure,dc=net)</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.ldap.group.roleattribute</name>
+		<value>cn</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.ldap.ad.domain</name>
+		<value></value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.ldap.ad.url</name>
+		<value></value>
+		<description></description>
+	</property>
+
+
+	<property>
+		<name>ajp.enabled</name>
+		<value>false</value>
+		<description></description>
+	</property>
+	
+	
+<!-- ################### System override properties (default values)\u0192 ################## -->
+<!-- #Search properties -->
+	<property>
+		<name>ranger.db.maxrows.default</name>
+		<value>200</value>
+	</property>
+	<property>
+		<name>ranger.db.min_inlist</name>
+		<value>20</value>
+	</property>
+	<property>
+		<name>ranger.ui.defaultDateformat</name>
+		<value>MM/dd/yyyy</value>
+	</property>
+	<property>
+		<name>ranger.db.defaultDateformat</name>
+		<value>yyyy-MM-dd</value>
+	</property>
+
+<!-- #Security Spring configurations -->
+	<property>
+		<name>ranger.ajax.auth.required.code</name>
+		<value>401</value>
+	</property>
+	<property>
+		<name>ranger.ajax.auth.success.page</name>
+		<value>/ajax_success.html</value>
+	</property>
+	<property>
+		<name>ranger.logout.success.page</name>
+		<value>/login.jsp?action=logged_out</value>
+	</property>
+	<property>
+		<name>ranger.ajax.auth.failure.page</name>
+		<value>/ajax_failure.jsp</value>
+	</property>
+
+<!-- #Role list -->
+	<property>
+		<name>ranger.users.roles.list</name>
+		<value>ROLE_SYS_ADMIN, ROLE_USER, ROLE_OTHER, ROLE_ANON</value>
+	</property>
+<!-- #Mail listing -->
+	<property>
+		<name>ranger.mail.enabled</name>
+		<value>true</value>
+	</property>
+	<property>
+		<name>ranger.mail.smtp.auth</name>
+		<value>false</value>
+	</property>
+	<property>
+		<name>ranger.mail.retry.sleep.ms</name>
+		<value>2000</value>
+	</property>
+	<property>
+		<name>ranger.mail.retry.max.count</name>
+		<value>5</value>
+	</property>
+	<property>
+		<name>ranger.mail.retry.sleep.incr_factor</name>
+		<value>1</value>
+	</property>
+	<property>
+		<name>ranger.mail.listener.enable</name>
+		<value>false</value>
+	</property>
+<!-- #Hibernate/JPA settings -->
+	<property>
+		<name>ranger.jpa.showsql</name>
+		<value>false</value>
+	</property>
+
+
+
+
+<!-- #Second Level Cache -->
+	<property>
+		<name>ranger.second_level_cache</name>
+		<value>true</value>
+	</property>
+	<property>
+		<name>ranger.use_query_cache</name>
+		<value>true</value>
+	</property>
+
+<!-- ############################### General application properties ############################## -->
+	<property>
+		<name>ranger.user.firstname.maxlength</name>
+		<value>16</value>
+	</property>
+	<property>
+		<name>ranger.bookmark.name.maxlen</name>
+		<value>150</value>
+	</property>
+	
+<!-- #RBAC -->
+	<property>
+		<name>ranger.rbac.enable</name>
+		<value>false</value>
+	</property>
+
+
+
+
+
+<!-- #REST paths -->
+	<property>
+		<name>ranger.rest.paths</name>
+		<value>org.apache.ranger.rest,xa.rest</value>
+	</property>
+
+<!-- #Password -->
+	<property>
+		<name>ranger.password.hidden</name>
+		<value>*****</value>
+	</property>
+	<property>
+		<name>ranger.resource.accessControl.enabled</name>
+		<value>true</value>
+	</property>
+	<property>
+		<name>ranger.xuser.createdByUserId</name>
+		<value>1</value>
+	</property>
+
+
+<!-- #hacks -->
+	<property>
+		<name>ranger.allow.hack=true</name>
+		<value>1</value>
+	</property>
+
+
+<!-- #audit logging -->
+	<property>
+		<name>ranger.log.SC_NOT_MODIFIED</name>
+		<value>false</value>
+	</property>
+
+<!-- # ServletMapping Url Pattern -->
+	<property>
+		<name>ranger.servlet.mapping.url.pattern</name>
+		<value>false</value>
+	</property>
+
+
+
+<!-- # File Separator -->
+
+	<property>
+		<name>ranger.file.separator</name>
+		<value>/</value>
+	</property>
+
+	<property>
+		<name>ranger.db.access.filter.enable</name>
+		<value>true</value>
+	</property>
+	<property>
+		<name>ranger.moderation.enabled</name>
+		<value>false</value>
+	</property>
+	<property>
+		<name>ranger.userpref.enabled</name>
+		<value>false</value>
+	</property>
+
+
+<!-- Embedded Web-Server properties  -->
+
+
+
+<!--
+#
+# Service Information
+#
+-->
+
+	<property>
+		<name>ranger.service.host</name>
+		<value>localhost</value>
+	</property>
+
+	<property>
+		<name>ranger.http.service.port</name>
+		<value>6080</value>
+	</property>
+
+	<property>
+		<name>ranger.service.shutdownPort</name>
+		<value>6085</value>
+	</property>
+
+	<property>
+		<name>ranger.service.shutdownCommand</name>
+		<value>SHUTDOWN</value>
+	</property>
+
+<!--
+# This property has already been included above.
+# Set ajp.enabled=true, if ranger-admin is behind an apache loadbalancer 
+# and loadbalancer is listening on https for requests from clients
+# and  BalancerMember configuration in Apache is pointing to ajp protocol
+-->
+<!-- 
+	<property>
+		<name>ajp.enabled</name>
+		<value>false</value>
+	</property>
+ -->
+<!-- #
+# SSL Connector Information
+#  -->
+
+	<property>
+		<name>ranger.https.service.port</name>
+		<value>6182</value>
+	</property>
+
+	<property>
+		<name>ranger.https.attrib.SSLEnabled</name>
+		<value>false</value>
+	</property> 
+
+	<property>
+		<name>ranger.https.attrib.sslProtocol</name>
+		<value>TLS</value>
+	</property>
+
+	<property>
+		<name>ranger.https.attrib.clientAuth</name>
+		<value>false</value>
+	</property>
+
+	<property>
+		<name>ranger.https.attrib.keyAlias</name>
+		<value>myKey</value>
+	</property>
+
+	<property>
+		<name>ranger.https.attrib.keystorePass</name>
+		<value>xasecure</value>
+	</property>
+
+	<property>
+		<name>ranger.https.attrib.keystoreFile</name>
+		<value>/etc/ranger/admin/keys/server.jks</value>
+	</property>
+
+<!-- #
+# Access Log Information
+# -->
+
+	<property>
+		<name>ranger.accesslog.dateformat</name>
+		<value>yyyy-MM-dd</value>
+	</property>
+
+	<property>
+		<name>ranger.accesslog.pattern</name>
+		<value>%h %l %u %t "%r" %s %b "%{Referer}i" "%{User-Agent}i"</value>
+	</property>
+
+
+<!-- Maven project Version  -->
+	<property>
+		<name>maven.project.version</name>
+		<value>${project.version}</value>
+		<description></description>
+	</property>
+</configuration>

@@ -187,8 +187,8 @@ public class XUserMgr extends XUserMgrBase {
 		List<XXTrxLog> trxLogList = xUserService.getTransactionLog(
 				createdXUser, "create");
 
-		String hiddenPassword = PropertiesUtil.getProperty(
-				"xa.password.hidden", "*****");
+//		String hiddenPassword = PropertiesUtil.getProperty("xa.password.hidden", "*****");
+		String hiddenPassword = PropertiesUtil.getProperty("ranger.password.hidden", "*****");
 		createdXUser.setPassword(hiddenPassword);
 
 		Collection<Long> groupIdList = vXUser.getGroupIdList();
@@ -330,8 +330,8 @@ public class XUserMgr extends XUserMgrBase {
 		vXPortalUser.setPublicScreenName(vXUser.getFirstName() + " "
 				+ vXUser.getLastName());
 		vXPortalUser.setUserSource(vXUser.getUserSource());
-		String hiddenPasswordString = PropertiesUtil.getProperty(
-				"xa.password.hidden", "*****");
+//		String hiddenPasswordString = PropertiesUtil.getProperty("xa.password.hidden", "*****");
+		String hiddenPasswordString = PropertiesUtil.getProperty("ranger.password.hidden", "*****");
 		String password = vXUser.getPassword();
 		if (oldUserProfile != null && password != null && password.equals(hiddenPasswordString)) {
 			vXPortalUser.setPassword(oldUserProfile.getPassword());

@@ -60,7 +60,8 @@ public class RangerServiceService extends RangerServiceServiceBase<XXService, Ra
 	
 	public RangerServiceService() {
 		super();
-		hiddenPasswordString = PropertiesUtil.getProperty("xa.password.hidden", "*****");
+//		hiddenPasswordString = PropertiesUtil.getProperty("xa.password.hidden", "*****");
+		hiddenPasswordString = PropertiesUtil.getProperty("ranger.password.hidden", "*****");
 		actionCreate = "create";
 		actionUpdate = "update";
 		actionDelete = "delete";

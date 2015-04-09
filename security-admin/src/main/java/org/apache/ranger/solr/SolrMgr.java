@@ -57,8 +57,10 @@ public class SolrMgr {
 			synchronized (lock) {
 				if (!initDone) {
 					if (rangerBizUtil.getAuditDBType().equalsIgnoreCase("solr")) {
+//						String solrURL = PropertiesUtil
+//								.getProperty("xa.audit.solr.url");
 						String solrURL = PropertiesUtil
-								.getProperty("xa.audit.solr.url");
+								.getProperty("ranger.audit.solr.url");
 						if (solrURL == null || solrURL.isEmpty()) {
 							logger.fatal("Solr URL for Audit is empty");
 						} else {
