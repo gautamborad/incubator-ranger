@@ -23,13 +23,28 @@
 <configuration>
 <!-- #Hibernate/JPA settings -->
 	<property>
-		<name>ranger.jdbc.dialect</name>
+		<name>ranger.jdbc.sqlconnectorjar</name>
+		<value>/usr/share/java/mysql-connector-java.jar</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.service.user</name>
+		<value>ranger</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.service.group</name>
+		<value>ranger</value>
+		<description></description>
+	</property>
+	<property>
+		<name>ranger.jpa.jdbc.dialect</name>
 		<value>org.eclipse.persistence.platform.database.MySQLPlatform</value>
 		<description></description>
 	</property>
 <!-- # DB Info -->
 	<property>
-		<name>ranger.jdbc.driver</name>
+		<name>ranger.jpa.jdbc.driver</name>
 		<value>net.sf.log4jdbc.DriverSpy</value>
 		<description></description>
 	</property>
@@ -39,17 +54,17 @@
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.jdbc.user</name>
+		<name>ranger.jpa.jdbc.user</name>
 		<value>xaadmin</value>
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.jdbc.password</name>
+		<name>ranger.jpa.jdbc.password</name>
 		<value>xaadmin</value>
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.webapp.url.root</name>
+		<name>ranger.externalurl</name>
 		<value>http://localhost:8080/security-admin-web</value>
 		<description></description>
 	</property>
@@ -69,47 +84,47 @@
 		<description></description>
 	</property>	
 	<property>
-		<name>ranger.jdbc.maxPoolSize</name>
+		<name>ranger.jpa.jdbc.maxpoolsize</name>
 		<value>40</value>
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.jdbc.minPoolSize</name>
+		<name>ranger.jpa.jdbc.minpoolsize</name>
 		<value>5</value>
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.jdbc.initialPoolSize</name>
+		<name>ranger.jpa.jdbc.initialpoolsize</name>
 		<value>5</value>
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.jdbc.maxIdleTime</name>
+		<name>ranger.jpa.jdbc.maxidletime</name>
 		<value>300</value>
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.jdbc.maxStatements</name>
+		<name>ranger.jpa.jdbc.maxstatements</name>
 		<value>500</value>
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.jdbc.preferredTestQuery</name>
+		<name>ranger.jpa.jdbc.preferredtestquery</name>
 		<value>select 1;</value>
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.jdbc.idleConnectionTestPeriod</name>
+		<name>ranger.jpa.jdbc.idleconnectiontestperiod</name>
 		<value>60</value>
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.jdbc.credential.alias</name>
+		<name>ranger.jpa.jdbc.credential.alias</name>
 		<value>mykey3</value>
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.jdbc.credential.provider.path</name>
+		<name>ranger.jpa.jdbc.credential.provider.path</name>
 		<value>/tmp/mykey3.jceks</value>
 		<description></description>
 	</property>
@@ -124,23 +139,23 @@
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.audit.solr.url</name>
-		<value></value>
+		<name>ranger.solr.url</name>
+		<value>http://##solr_host##:6083/solr/ranger_audits</value>
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.audit.store</name>
+		<name>ranger.audit.source.type</name>
 		<value>db</value>
 		<description></description>
 	</property>
 <!-- # DB Info for audit_DB -->
 	<property>
-		<name>ranger.auditDB.jdbc.dialect</name>
+		<name>ranger.jpa.auditDB.jdbc.dialect</name>
 		<value>org.eclipse.persistence.platform.database.MySQLPlatform</value>
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.auditDB.jdbc.driver</name>
+		<name>ranger.jpa.auditDB.jdbc.driver</name>
 		<value>net.sf.log4jdbc.DriverSpy</value>
 		<description></description>
 	</property>
@@ -155,22 +170,22 @@
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.auditDB.jdbc.password</name>
+		<name>ranger.jpa.auditDB.jdbc.password</name>
 		<value>xalogger</value>
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.auditDB.jdbc.credential.alias</name>
+		<name>ranger.jpa.auditDB.jdbc.credential.alias</name>
 		<value>mykey4</value>
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.auditDB.jdbc.credential.provider.path</name>
+		<name>ranger.jpa.auditDB.jdbc.credential.provider.path</name>
 		<value>/tmp/mykey4.jceks</value>
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.http.enabled</name>
+		<name>ranger.service.http.enabled</name>
 		<value>true</value>
 		<description></description>
 	</property>
@@ -212,7 +227,7 @@
 	<property>
 		<name>ranger.ldap.ad.url</name>
 		<value></value>
-		<description></description>
+		<description>ldap://</description>
 	</property>
 
 
@@ -408,17 +423,17 @@
 	</property>
 
 	<property>
-		<name>ranger.http.service.port</name>
+		<name>ranger.service.http.port</name>
 		<value>6080</value>
 	</property>
 
 	<property>
-		<name>ranger.service.shutdownPort</name>
+		<name>ranger.service.shutdown.port</name>
 		<value>6085</value>
 	</property>
 
 	<property>
-		<name>ranger.service.shutdownCommand</name>
+		<name>ranger.service.shutdown.command</name>
 		<value>SHUTDOWN</value>
 	</property>
 
@@ -439,37 +454,37 @@
 #  -->
 
 	<property>
-		<name>ranger.https.service.port</name>
+		<name>ranger.service.https.port</name>
 		<value>6182</value>
 	</property>
 
 	<property>
-		<name>ranger.https.attrib.SSLEnabled</name>
+		<name>ranger.service.https.attrib.ssl.enabled</name>
 		<value>false</value>
 	</property> 
 
 	<property>
-		<name>ranger.https.attrib.sslProtocol</name>
+		<name>ranger.service.https.attrib.ssl.protocol</name>
 		<value>TLS</value>
 	</property>
 
 	<property>
-		<name>ranger.https.attrib.clientAuth</name>
+		<name>ranger.service.https.attrib.client.auth</name>
 		<value>false</value>
 	</property>
 
 	<property>
-		<name>ranger.https.attrib.keyAlias</name>
+		<name>ranger.service.https.attrib.keystore.keyalias</name>
 		<value>myKey</value>
 	</property>
 
 	<property>
-		<name>ranger.https.attrib.keystorePass</name>
+		<name>ranger.service.https.attrib.keystore.pass</name>
 		<value>xasecure</value>
 	</property>
 
 	<property>
-		<name>ranger.https.attrib.keystoreFile</name>
+		<name>ranger.https.attrib.keystore.file</name>
 		<value>/etc/ranger/admin/keys/server.jks</value>
 	</property>
 

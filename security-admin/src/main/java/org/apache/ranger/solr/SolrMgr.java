@@ -60,7 +60,7 @@ public class SolrMgr {
 //						String solrURL = PropertiesUtil
 //								.getProperty("xa.audit.solr.url");
 						String solrURL = PropertiesUtil
-								.getProperty("ranger.audit.solr.url");
+								.getProperty("ranger.solr.url");
 						if (solrURL == null || solrURL.isEmpty()) {
 							logger.fatal("Solr URL for Audit is empty");
 						} else {

@@ -110,7 +110,7 @@ public class RangerBizUtil {
 //		auditDBType = PropertiesUtil.getProperty("xa.audit.store",
 //				auditDBType).toLowerCase();
 		
-		auditDBType = PropertiesUtil.getProperty("ranger.audit.store",
+		auditDBType = PropertiesUtil.getProperty("ranger.audit.source.type",
 		auditDBType).toLowerCase();
 
 		
@@ -1325,7 +1325,7 @@ public class RangerBizUtil {
 		dbFlavor = PropertiesUtil.getProperty("xa.db.flavor");
 		if (dbFlavor == null || dbFlavor.trim().isEmpty()) {
 //			dbFlavor = PropertiesUtil.getProperty("jdbc.dialect");
-			dbFlavor = PropertiesUtil.getProperty("ranger.jdbc.dialect");
+			dbFlavor = PropertiesUtil.getProperty("ranger.jpa.jdbc.dialect");
 			dbFlavorPropFound = false;
 		}
 

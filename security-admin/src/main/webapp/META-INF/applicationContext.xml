@@ -46,7 +46,7 @@ http://www.springframework.org/schema/util/spring-util.xsd">
 		<property name="dataSource" ref="defaultDataSource" />
 		<property name="jpaVendorAdapter">
 			<bean class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
-				<property name="databasePlatform" value="${ranger.jdbc.dialect}" />
+				<property name="databasePlatform" value="${ranger.jpa.jdbc.dialect}" />
 				<property name="showSql" value="${ranger.jpa.showsql}" />
 				<property name="generateDdl" value="false" />
 			</bean>
@@ -66,7 +66,7 @@ http://www.springframework.org/schema/util/spring-util.xsd">
 		<property name="dataSource" ref="loggingDataSource" />
 		<property name="jpaVendorAdapter">
 			<bean class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
-				<property name="databasePlatform" value="${ranger.auditDB.jdbc.dialect}" />
+				<property name="databasePlatform" value="${ranger.jpa.auditDB.jdbc.dialect}" />
 				<property name="showSql" value="${ranger.jpa.showsql}" />
 				<property name="generateDdl" value="false" />
 			</bean>
@@ -133,79 +133,79 @@ http://www.springframework.org/schema/util/spring-util.xsd">
 	<!-- Datasource and Connection Pool Configuration http://www.mchange.com/projects/c3p0/index.jsp#configuration_properties -->
 	<bean id="defaultDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
 		<property name="driverClass">
-			<value>${ranger.jdbc.driver}</value>
+			<value>${ranger.jpa.jdbc.driver}</value>
 		</property>
 		<property name="jdbcUrl">
 			<value>${ranger.jdbc.url}</value>
 		</property>
 		<property name="user">
-			<value>${ranger.jdbc.user}</value>
+			<value>${ranger.jpa.jdbc.user}</value>
 		</property>
 		<property name="password">
-			<value>${ranger.jdbc.password}</value>
+			<value>${ranger.jpa.jdbc.password}</value>
 		</property>
 		<property name="maxPoolSize">
 			<!-- <value>20</value> -->
-			<value>${ranger.jdbc.maxPoolSize}</value>
+			<value>${ranger.jpa.jdbc.maxpoolsize}</value>
 		</property>
 		<property name="minPoolSize">
-			<value>${ranger.jdbc.minPoolSize}</value>
+			<value>${ranger.jpa.jdbc.minpoolsize}</value>
 		</property>
 		<property name="initialPoolSize">
-			<value>${ranger.jdbc.initialPoolSize}</value>
+			<value>${ranger.jpa.jdbc.initialpoolsize}</value>
 		</property>
 		<!-- Seconds a Connection can remain pooled but unused before being discarded.
 		Zero means idle connections never expire. -->
 		<property name="maxIdleTime">
-			<value>${ranger.jdbc.maxIdleTime}</value>
+			<value>${ranger.jpa.jdbc.maxidletime}</value>
 		</property>
 		<property name="maxStatements">
-			<value>${ranger.jdbc.maxStatements}</value>
+			<value>${ranger.jpa.jdbc.maxstatements}</value>
 		</property>
 		<property name="preferredTestQuery">
-			<value>${ranger.jdbc.preferredTestQuery}</value>
+			<value>${ranger.jpa.jdbc.preferredtestquery}</value>
 		</property>
 		<property name="idleConnectionTestPeriod">
-			<value>${ranger.jdbc.idleConnectionTestPeriod}</value>
+			<value>${ranger.jpa.jdbc.idleconnectiontestperiod}</value>
 		</property>
 	</bean>	
 	
 	<bean id="loggingDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
 		<property name="driverClass">
-			<value>${ranger.auditDB.jdbc.driver}</value>
+			<value>${ranger.jpa.auditDB.jdbc.driver}</value>
 		</property>
 		<property name="jdbcUrl">
 			<value>${ranger.auditDB.jdbc.url}</value>
 		</property>
 		<property name="user">
-			<value>${ranger.jdbc.user}</value>
+			<value>${ranger.jpa.jdbc.user}</value>
 		</property>
 		<property name="password">
-			<value>${ranger.jdbc.password}</value>
+			<value>${ranger.jpa.jdbc.password}</value>
 		</property>
 		<property name="maxPoolSize">
 			<!-- <value>20</value> -->
-			<value>${ranger.jdbc.maxPoolSize}</value>
+			<value>${ranger.jpa.jdbc.maxpoolsize}</value>
 		</property>
 		<property name="minPoolSize">
-			<value>${ranger.jdbc.minPoolSize}</value>
+			<value>${ranger.jpa.jdbc.minpoolsize}</value>
 		</property>
 		<property name="initialPoolSize">
-			<value>${ranger.jdbc.initialPoolSize}</value>
+			<value>${ranger.jpa.jdbc.initialpoolsize}</value>
 		</property>
 		<!-- Seconds a Connection can remain pooled but unused before being discarded.
 		Zero means idle connections never expire. -->
 		<property name="maxIdleTime">
-			<value>${ranger.jdbc.maxIdleTime}</value>
+			<value>${ranger.jpa.jdbc.maxidletime}</value>
 		</property>
 		<property name="maxStatements">
-			<value>${ranger.jdbc.maxStatements}</value>
+			<value>${ranger.jpa.jdbc.maxstatements}</value>
 		</property>
 		<property name="preferredTestQuery">
-			<value>${ranger.jdbc.preferredTestQuery}</value>
+			<value>${ranger.jpa.jdbc.preferredtestquery}</value>
 		</property>
 		<property name="idleConnectionTestPeriod">
-			<value>${ranger.jdbc.idleConnectionTestPeriod}</value>
+			<value>${ranger.jpa.jdbc.idleconnectiontestperiod}</value>
 		</property>
 	</bean>
 		

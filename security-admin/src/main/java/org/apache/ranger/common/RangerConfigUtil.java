@@ -41,9 +41,9 @@ public class RangerConfigUtil {
 		// webappRootURL = PropertiesUtil
 		// .getProperty("xa.webapp.url.root");
 
-		webappRootURL = PropertiesUtil.getProperty("ranger.webapp.url.root");
+		webappRootURL = PropertiesUtil.getProperty("ranger.externalurl");
 		if (webappRootURL == null || webappRootURL.trim().length() == 0) {
-			logger.error("webapp URL is not set. Please ranger.webapp.url.root property");
+			logger.error("webapp URL is not set. Please ranger.externalurl property");
 		}
 
 		// defaultMaxRows =

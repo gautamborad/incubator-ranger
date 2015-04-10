@@ -1173,7 +1173,7 @@ public class ServiceUtil {
 		  
 		boolean isValidAuthentication=false;
 //		boolean httpEnabled = PropertiesUtil.getBooleanProperty("http.enabled",true);
-		boolean httpEnabled = PropertiesUtil.getBooleanProperty("ranger.http.enabled",true);
+		boolean httpEnabled = PropertiesUtil.getBooleanProperty("ranger.service.http.enabled",true);
 		X509Certificate[] certchain = (X509Certificate[]) request.getAttribute("javax.servlet.request.X509Certificate");
 		String ipAddress = request.getHeader("X-FORWARDED-FOR");  
 		if (ipAddress == null) {  
