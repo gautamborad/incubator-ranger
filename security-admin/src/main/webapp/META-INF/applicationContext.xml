@@ -136,7 +136,7 @@ http://www.springframework.org/schema/util/spring-util.xsd">
 			<value>${ranger.jpa.jdbc.driver}</value>
 		</property>
 		<property name="jdbcUrl">
-			<value>${ranger.jdbc.url}</value>
+			<value>${ranger.jpa.jdbc.url}</value>
 		</property>
 		<property name="user">
 			<value>${ranger.jpa.jdbc.user}</value>
@@ -175,10 +175,10 @@ http://www.springframework.org/schema/util/spring-util.xsd">
 			<value>${ranger.jpa.auditDB.jdbc.driver}</value>
 		</property>
 		<property name="jdbcUrl">
-			<value>${ranger.auditDB.jdbc.url}</value>
+			<value>${ranger.jpa.auditDB.jdbc.url}</value>
 		</property>
 		<property name="user">
-			<value>${ranger.jpa.jdbc.user}</value>
+			<value>${ranger.jpa.auditDB.jdbc.user}</value>
 		</property>
 		<property name="password">
 			<value>${ranger.jpa.jdbc.password}</value>

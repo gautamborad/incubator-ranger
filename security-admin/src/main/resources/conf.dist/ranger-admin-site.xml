@@ -42,23 +42,23 @@
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.jdbc.url</name>
-		<value>jdbc:log4jdbc:mysql://localhost:3306/xa_db</value>
+		<name>ranger.jpa.jdbc.url</name>
+		<value>jdbc:log4jdbc:mysql://localhost:3306/ranger</value>
 		<description></description>
 	</property>
 	<property>
 		<name>ranger.jpa.jdbc.user</name>
-		<value>xaadmin</value>
+		<value>rangeradmin</value>
 		<description></description>
 	</property>
 	<property>
 		<name>ranger.jpa.jdbc.password</name>
-		<value>xaadmin</value>
+		<value>rangeradmin</value>
 		<description></description>
 	</property>
 	<property>
 		<name>ranger.externalurl</name>
-		<value>http://localhost:8080/security-admin-web</value>
+		<value>http://localhost:6080</value>
 		<description></description>
 	</property>
 	<property>
@@ -153,18 +153,18 @@
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.auditDB.jdbc.url</name>
-		<value>jdbc:log4jdbc:mysql://localhost:3306/xasecure</value>
+		<name>ranger.jpa.auditDB.jdbc.url</name>
+		<value>jdbc:log4jdbc:mysql://localhost:3306/ranger</value>
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.auditDB.jdbc.user</name>
-		<value>xalogger</value>
+		<name>ranger.jpa.auditDB.jdbc.user</name>
+		<value>rangerlogger</value>
 		<description></description>
 	</property>
 	<property>
 		<name>ranger.jpa.auditDB.jdbc.password</name>
-		<value>xalogger</value>
+		<value>rangerlogger</value>
 		<description></description>
 	</property>
 	<property>
