@@ -20,26 +20,24 @@
 package org.apache.ranger.server.tomcat;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.AccessLogValve;
-import org.apache.hadoop.conf.Configuration;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class EmbeddedServer {
 
@@ -340,52 +338,52 @@ public class EmbeddedServer {
 		LOG.info("Shuting down the Server.");
 		System.exit(0);
 	}
-
-	private void loadRangerSiteConfig() {
-
-		String cfgFile = getResourceFileName(configFile);
-
-		InputStream inputStream =  null;
+	
+	
+	public void loadRangerSiteConfig() {
+		String path = getResourceFileName(configFile);
 		try {
-			inputStream = new FileInputStream(cfgFile);
-			Configuration configuration = getRANGERConf(inputStream);
-//			Map<String, String> propertiesMap = new HashMap<String, String>();
-			for (Iterator<Entry<String, String>> configurationIterator = configuration
-					.iterator(); configurationIterator.hasNext();) {
-				Map.Entry<String, String> configurationEntry = (Map.Entry<String, String>) configurationIterator
-						.next();
-				serverConfigProperties.put(configurationEntry.getKey().trim(),
-						configurationEntry.getValue().trim());
+			DocumentBuilderFactory xmlDocumentBuilderFactory = DocumentBuilderFactory
+					.newInstance();
+			xmlDocumentBuilderFactory.setIgnoringComments(true);
+			xmlDocumentBuilderFactory.setNamespaceAware(true);
+			DocumentBuilder xmlDocumentBuilder = xmlDocumentBuilderFactory
+					.newDocumentBuilder();
+			Document xmlDocument = xmlDocumentBuilder.parse(new File(path));
+			xmlDocument.getDocumentElement().normalize();
+
+			NodeList nList = xmlDocument.getElementsByTagName("property");
+
+			for (int temp = 0; temp < nList.getLength(); temp++) {
+
+				Node nNode = nList.item(temp);
+
+				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+
+					Element eElement = (Element) nNode;
+
+					String propertyName = "";
+					String propertyValue = "";
+					if (eElement.getElementsByTagName("name").item(0) != null) {
+						propertyName = eElement.getElementsByTagName("name")
+								.item(0).getTextContent().trim();
+					}
+					if (eElement.getElementsByTagName("value").item(0) != null) {
+						propertyValue = eElement.getElementsByTagName("value")
+								.item(0).getTextContent().trim();
+					}
+
+					serverConfigProperties.put(propertyName, propertyValue);
+
+				}
 			}
-		} catch (FileNotFoundException e) {
+
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		// return propertiesMap;
-//		serverConfigProperties.put("", "");
-		serverConfigProperties.list(System.out);
 	}
 
-	public static Configuration getRANGERConf(InputStream inputStream) {
-		return getConfiguration(false, inputStream);
-	}
 
-	static Configuration getConfiguration(boolean loadHadoopDefaults,
-			InputStream inputStream) {
-		Configuration conf = new Configuration(loadHadoopDefaults);
-		if (inputStream != null) {
-			try {
-				conf.addResource(inputStream);
-
-			} catch (Exception ex) {
-//				logger.error(ex.getMessage());
-				ex.printStackTrace();
-				throw new RuntimeException(ex);
-			}
-		} else {
-			conf.addResource(inputStream);
-		}
-		return conf;
-	}
 
 }

@@ -17,7 +17,7 @@ def write_properties_to_xml(xml_path, property_name='', property_value=''):
 
 
 
-if __name__ == 'main':
+if __name__ == '__main__':
 	if(len(sys.argv) > 1):
 		parameter_name = sys.argv[1] if len(sys.argv) > 1  else None
 		parameter_value = sys.argv[2] if len(sys.argv) > 2  else None
