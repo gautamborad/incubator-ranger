@@ -477,7 +477,7 @@
 	</property>
 
 	<property>
-		<name>ranger.https.attrib.keystore.file</name>
+		<name>ranger.service.https.attrib.keystore.file</name>
 		<value>/etc/ranger/admin/keys/server.jks</value>
 	</property>
 

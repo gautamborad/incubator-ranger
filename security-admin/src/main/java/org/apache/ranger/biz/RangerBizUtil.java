@@ -1348,7 +1348,7 @@ public class RangerBizUtil {
 				}
 			}
 		} else {
-			logger.error("Property : xa.db.flavor or jdbc.dialect, not found");
+			logger.error("Property : xa.db.flavor or ranger.jpa.jdbc.dialect, not found");
 			return AppConstants.DB_FLAVOR_UNKNOWN;
 		}
 	}

@@ -112,7 +112,7 @@ public class EmbeddedServer {
 //		int shutdownPort = getIntConfig("service.shutdownPort",DEFAULT_SHUTDOWN_PORT);
 		int shutdownPort = getIntConfig("ranger.service.shutdown.port",DEFAULT_SHUTDOWN_PORT);
 //		String shutdownCommand = getConfig("service.shutdownCommand",DEFAULT_SHUTDOWN_COMMAND);
-		String shutdownCommand = getConfig("ranger.service.shutdown.port",DEFAULT_SHUTDOWN_COMMAND);
+		String shutdownCommand = getConfig("ranger.service.shutdown.command",DEFAULT_SHUTDOWN_COMMAND);
 
 		server.setHostname(hostName);
 		server.setPort(serverPort);
@@ -141,15 +141,16 @@ public class EmbeddedServer {
 			ssl.setSecure(true);
 			ssl.setScheme("https");
 			ssl.setAttribute("SSLEnabled", "true");
-			ssl.setAttribute("sslProtocol",
-					getConfig("https.attrib.sslProtocol", "TLS"));
-			ssl.setAttribute("clientAuth",
-					getConfig("https.attrib.clientAuth", "false"));
-			ssl.setAttribute("keyAlias", getConfig("https.attrib.keyAlias"));
-			ssl.setAttribute("keystorePass",
-					getConfig("https.attrib.keystorePass"));
-			ssl.setAttribute("keystoreFile",
-					getConfig("https.attrib.keystoreFile"));
+			//ssl.setAttribute("sslProtocol", getConfig("https.attrib.sslProtocol", "TLS"));
+			ssl.setAttribute("sslProtocol", getConfig("ranger.service.https.attrib.ssl.protocol", "TLS"));
+			//ssl.setAttribute("clientAuth", getConfig("https.attrib.clientAuth", "false"));
+			ssl.setAttribute("clientAuth", getConfig("ranger.service.https.attrib.client.auth", "false"));
+			//ssl.setAttribute("keyAlias", getConfig("https.attrib.keyAlias"));
+			ssl.setAttribute("keyAlias", getConfig("ranger.service.https.attrib.keystore.keyalias"));
+			//ssl.setAttribute("keystorePass", getConfig("https.attrib.keystorePass"));
+			ssl.setAttribute("keystorePass", getConfig("ranger.service.https.attrib.keystore.pass"));
+			//ssl.setAttribute("keystoreFile", getConfig("https.attrib.keystoreFile"));
+			ssl.setAttribute("keystoreFile", getConfig("ranger.service.https.attrib.keystore.file"));
 
 			String enabledProtocols = "SSLv2Hello, TLSv1, TLSv1.1, TLSv1.2";
 			ssl.setAttribute("sslEnabledProtocols", enabledProtocols);
@@ -175,14 +176,14 @@ public class EmbeddedServer {
 		valve.setAsyncSupported(true);
 		valve.setBuffered(false);
 		valve.setEnabled(true);
-		valve.setFileDateFormat(getConfig("accesslog.dateformat",
-				"yyyy-MM-dd.HH"));
+		//valve.setFileDateFormat(getConfig("accesslog.dateformat", "yyyy-MM-dd.HH"));
+		valve.setFileDateFormat(getConfig("ranger.accesslog.dateformat", "yyyy-MM-dd.HH"));
 		valve.setDirectory(logDirectory.getAbsolutePath());
 		valve.setRotatable(true);
 		valve.setSuffix(".log");
 
-		String logPattern = getConfig("accesslog.pattern",
-				"%h %l %u %t \"%r\" %s %b");
+		//String logPattern = getConfig("accesslog.pattern", "%h %l %u %t \"%r\" %s %b");
+		String logPattern = getConfig("ranger.accesslog.pattern", "%h %l %u %t \"%r\" %s %b");
 		valve.setPattern(logPattern);
 
 		server.getHost().getPipeline().addValve(valve);
@@ -190,7 +191,7 @@ public class EmbeddedServer {
 		try {
 			String webapp_dir = getConfig("xa.webapp.dir");
 			if (webapp_dir == null || webapp_dir.trim().isEmpty()) {
-				// If webapp location property is not set, then let's dervice
+				// If webapp location property is not set, then let's derive
 				// from catalina_base
 				String catalina_base = getConfig("catalina.base");
 				if (catalina_base == null || catalina_base.trim().isEmpty()) {
@@ -202,7 +203,8 @@ public class EmbeddedServer {
 						+ webapp_dir);
 			}
 
-			String webContextName = getConfig("xa.webapp.contextName", "/");
+			//String webContextName = getConfig("xa.webapp.contextName", "/");
+			String webContextName = getConfig("ranger.contextName", "/");
 			if (webContextName == null) {
 				webContextName = "/";
 			} else if (!webContextName.startsWith("/")) {
