@@ -64,10 +64,5 @@
         <artifactId>ecj</artifactId>
         <version>P20140317-1600</version>
     </dependency>
-        <dependency>
-        <groupId>org.apache.hadoop</groupId>
-        <artifactId>hadoop-common</artifactId>
-        <version>${hadoop-common.version}</version>
-    </dependency>
   </dependencies>
 </project>

@@ -49,7 +49,8 @@ public class XAgentService {
 	public XAgentService() {
 //		defaultDBDateFormat = PropertiesUtil.getProperty("xa.db.defaultDateformat", defaultDBDateFormat);
 		defaultDBDateFormat = PropertiesUtil.getProperty("ranger.db.defaultDateformat", defaultDBDateFormat);
-		auditSupported = PropertiesUtil.getBooleanProperty("xa.audit.supported", false);
+		auditSupported = PropertiesUtil.getBooleanProperty("xa.audit.supported", 
+				false);
 	}
 	
 	private boolean isHDFSLog(String loggerName, int fieldCount) {

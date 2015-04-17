@@ -29,10 +29,12 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.ranger.biz.RangerBizUtil;
 import org.apache.ranger.biz.ServiceDBStore;
 import org.apache.ranger.common.RESTErrorUtil;
 import org.apache.ranger.plugin.model.RangerPolicy;
@@ -41,11 +43,11 @@ import org.apache.ranger.plugin.model.RangerServiceDef;
 import org.apache.ranger.plugin.model.validation.RangerPolicyValidator;
 import org.apache.ranger.plugin.model.validation.RangerServiceDefValidator;
 import org.apache.ranger.plugin.model.validation.RangerServiceValidator;
-import org.apache.ranger.plugin.model.validation.RangerValidatorFactory;
 import org.apache.ranger.plugin.model.validation.RangerValidator.Action;
-import org.apache.ranger.rest.ServiceREST;
+import org.apache.ranger.plugin.model.validation.RangerValidatorFactory;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 public class TestServiceRESTForValidation {
 
@@ -57,6 +59,8 @@ public class TestServiceRESTForValidation {
 		// inject out store in it
 		_store = mock(ServiceDBStore.class);
 		_serviceRest.svcStore = _store;
+		_bizUtils = mock(RangerBizUtil.class);
+		_serviceRest.bizUtil = _bizUtils;
 		
 		// and our validator factory
 		_factory = mock(RangerValidatorFactory.class);
@@ -200,15 +204,17 @@ public class TestServiceRESTForValidation {
 
 	@Test
 	public void testPolicy_happyPath() {
+		setupBizUtils();
+		
 		try {
-//			_serviceRest.updatePolicy(_policy);
-//			verify(_policyValidator).validate(_policy, Action.UPDATE);
+			_serviceRest.updatePolicy(_policy);
+			verify(_policyValidator).validate(_policy, Action.UPDATE, true);
 
 			_serviceRest.deletePolicy(3L);
 			verify(_policyValidator).validate(3L, Action.DELETE);
 
-//			_serviceRest.createPolicy(_policy);
-//			verify(_policyValidator).validate(_policy, Action.CREATE);
+			_serviceRest.createPolicy(_policy);
+			verify(_policyValidator).validate(_policy, Action.CREATE, true);
 		} catch (Exception e) {
 			LOG.debug(e);
 			fail("unexpected exception");
@@ -217,30 +223,33 @@ public class TestServiceRESTForValidation {
 	
 	@Test
 	public void testPolicy_validatorFailure() throws Exception {
+
+		// let's have bizutil return true everytime
+		setupBizUtils();
 		
-//		doThrow(_exception).when(_policyValidator).validate(_policy, Action.CREATE);
-//		try {
-//			_serviceRest.createPolicy(_policy);
-//			fail("Should have thrown exception!");
-//		} catch (WebApplicationException t) {
-//			verify(_policyValidator).validate(_policy, Action.CREATE);
-//			verify(_store, never()).createPolicy(_policy);
-//		} catch (Throwable t) {
-//			LOG.debug(t);
-//			fail("Unexpected exception!");
-//		}
-//
-//		doThrow(_exception).when(_policyValidator).validate(_policy, Action.UPDATE);
-//		try {
-//			_serviceRest.updatePolicy(_policy);
-//			fail("Should have thrown exception!");
-//		} catch (WebApplicationException t) {
-//			verify(_policyValidator).validate(_policy, Action.UPDATE);
-//			verify(_store, never()).updatePolicy(_policy);
-//		} catch (Throwable t) {
-//			LOG.debug(t);
-//			fail("Unexpected exception!");
-//		}
+		doThrow(_exception).when(_policyValidator).validate(_policy, Action.CREATE, true);
+		try {
+			_serviceRest.createPolicy(_policy);
+			fail("Should have thrown exception!");
+		} catch (WebApplicationException t) {
+			verify(_policyValidator).validate(_policy, Action.CREATE, true);
+			verify(_store, never()).createPolicy(_policy);
+		} catch (Throwable t) {
+			LOG.debug(t);
+			fail("Unexpected exception!");
+		}
+
+		doThrow(_exception).when(_policyValidator).validate(_policy, Action.UPDATE, true);
+		try {
+			_serviceRest.updatePolicy(_policy);
+			fail("Should have thrown exception!");
+		} catch (WebApplicationException t) {
+			verify(_policyValidator).validate(_policy, Action.UPDATE, true);
+			verify(_store, never()).updatePolicy(_policy);
+		} catch (Throwable t) {
+			LOG.debug(t);
+			fail("Unexpected exception!");
+		}
 
 		doThrow(_exception).when(_policyValidator).validate(4L, Action.DELETE);
 		try {
@@ -257,29 +266,33 @@ public class TestServiceRESTForValidation {
 	
 	@Test
 	public void testPolicy_storeFailure() throws Exception {
-//		doThrow(_exception).when(_store).createPolicy(_policy);
-//		try {
-//			_serviceRest.createPolicy(_policy);
-//			fail("Should have thrown exception!");
-//		} catch (WebApplicationException e) {
-//			verify(_policyValidator).validate(_policy, Action.CREATE);
-//			verify(_store).createPolicy(_policy);
-//		} catch (Throwable t) {
-//			LOG.debug(t);
-//			fail("Unexpected exception!");
-//		}
-//		
-//		doThrow(_exception).when(_store).updatePolicy(_policy);
-//		try {
-//			_serviceRest.updatePolicy(_policy);
-//			fail("Should have thrown exception!");
-//		} catch (WebApplicationException e) {
-//			verify(_policyValidator).validate(_policy, Action.UPDATE);
-//			verify(_store).updatePolicy(_policy);
-//		} catch (Throwable t) {
-//			LOG.debug(t);
-//			fail("Unexpected exception!");
-//		}
+
+		// let's have bizutils return true for now
+		setupBizUtils();
+		
+		doThrow(_exception).when(_store).createPolicy(_policy);
+		try {
+			_serviceRest.createPolicy(_policy);
+			fail("Should have thrown exception!");
+		} catch (WebApplicationException e) {
+			verify(_policyValidator).validate(_policy, Action.CREATE, true);
+			verify(_store).createPolicy(_policy);
+		} catch (Throwable t) {
+			LOG.debug(t);
+			fail("Unexpected exception!");
+		}
+		
+		doThrow(_exception).when(_store).updatePolicy(_policy);
+		try {
+			_serviceRest.updatePolicy(_policy);
+			fail("Should have thrown exception!");
+		} catch (WebApplicationException e) {
+			verify(_policyValidator).validate(_policy, Action.UPDATE, true);
+			verify(_store).updatePolicy(_policy);
+		} catch (Throwable t) {
+			LOG.debug(t);
+			fail("Unexpected exception!");
+		}
 		
 		doThrow(_exception).when(_store).deletePolicy(5L);
 		try {
@@ -309,7 +322,8 @@ public class TestServiceRESTForValidation {
 			_serviceRest.updateServiceDef(_serviceDef);
 			verify(_serviceDefValidator).validate(_serviceDef, Action.UPDATE);
 
-			_serviceRest.deleteServiceDef(3L);
+			HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+			_serviceRest.deleteServiceDef(3L, request);
 			verify(_serviceDefValidator).validate(3L, Action.DELETE);
 		} catch (Throwable t) {
 			t.printStackTrace();
@@ -346,7 +360,8 @@ public class TestServiceRESTForValidation {
 
 		doThrow(_exception).when(_serviceDefValidator).validate(4L, Action.DELETE);
 		try {
-			_serviceRest.deleteServiceDef(4L);
+			HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+			_serviceRest.deleteServiceDef(4L, request);
 			fail("Should have thrown exception!");
 		} catch (WebApplicationException t) {
 			verify(_serviceDefValidator).validate(4L, Action.DELETE);
@@ -385,7 +400,8 @@ public class TestServiceRESTForValidation {
 		
 		doThrow(_exception).when(_store).deleteServiceDef(5L);
 		try {
-			_serviceRest.deleteServiceDef(5L);
+			HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+			_serviceRest.deleteServiceDef(5L, request);
 			fail("Should have thrown exception!");
 		} catch (WebApplicationException e) {
 			verify(_serviceDefValidator).validate(5L, Action.DELETE);
@@ -396,6 +412,10 @@ public class TestServiceRESTForValidation {
 		}
 	}
 
+	void setupBizUtils() {
+		when(_bizUtils.isAdmin()).thenReturn(true);
+	}
+	
 	private RangerValidatorFactory _factory;
 	private RangerServiceValidator _serviceValidator;
 	private RangerPolicyValidator _policyValidator;
@@ -405,6 +425,7 @@ public class TestServiceRESTForValidation {
 	private ServiceREST _serviceRest;
 	private Exception _exception;
 	private RESTErrorUtil _restErrorUtil;
+	private RangerBizUtil _bizUtils;
 
 	private RangerService _service;
 	private RangerPolicy _policy;

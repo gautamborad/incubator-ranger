@@ -115,7 +115,7 @@ public class PublicAPIsv2 {
 		// serviceDef.name is immutable
 		// if serviceDef.name is specified, it should be same as the param 'name'
 		if(serviceDef.getName() == null) {
-			serviceDef.setType(name);
+			serviceDef.setName(name);
 		} else if(!serviceDef.getName().equals(name)) {
 			throw restErrorUtil.createRESTException(HttpServletResponse.SC_BAD_REQUEST , "serviceDef name mismatch", true);
 		}
@@ -153,16 +153,16 @@ public class PublicAPIsv2 {
 	@DELETE
 	@Path("/api/servicedef/{id}")
 	@PreAuthorize("hasRole('ROLE_SYS_ADMIN')")
-	public void deleteServiceDef(@PathParam("id") Long id) {
-		serviceREST.deleteServiceDef(id);
+	public void deleteServiceDef(@PathParam("id") Long id, @Context HttpServletRequest request) {
+		serviceREST.deleteServiceDef(id, request);
 	}
 
 	@DELETE
 	@Path("/api/servicedef/name/{name}")
 	@PreAuthorize("hasRole('ROLE_SYS_ADMIN')")
-	public void deleteServiceDefByName(@PathParam("name") String name) {
+	public void deleteServiceDefByName(@PathParam("name") String name, @Context HttpServletRequest request) {
 		RangerServiceDef serviceDef = serviceREST.getServiceDefByName(name);
-		serviceREST.deleteServiceDef(serviceDef.getId());
+		serviceREST.deleteServiceDef(serviceDef.getId(), request);
 	}
 
 	/*
@@ -353,6 +353,9 @@ public class PublicAPIsv2 {
 		policy.setId(oldPolicy.getId());
 		if(StringUtils.isEmpty(policy.getGuid())) {
 			policy.setGuid(oldPolicy.getGuid());
+		}
+		if(StringUtils.isEmpty(policy.getName())) {
+			policy.setName(oldPolicy.getName());
 		}
 
 		return serviceREST.updatePolicy(policy);

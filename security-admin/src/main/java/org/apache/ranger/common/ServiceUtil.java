@@ -322,6 +322,7 @@ public class ServiceUtil {
 				ret.setServices(resString);
 			}
 		}
+		updateResourceName(ret);
 
 		List<VXPermMap> permMapList = getVXPermMapList(policy);
 		
@@ -486,7 +487,121 @@ public class ServiceUtil {
 		}
 		return ret;
 	}	
-	
+
+	private void updateResourceName(VXPolicy policy) {
+		if(policy == null) {
+			return;
+		}
+
+		String resourceName = getResourceName(toAssetType(policy.getRepositoryType()),
+											  policy.getResourceName(),
+											  policy.getTables(),
+											  policy.getColumnFamilies(),
+											  policy.getColumns(),
+											  policy.getDatabases(),
+											  policy.getTopologies(),
+											  policy.getServices());
+
+		policy.setResourceName(resourceName);
+	}
+
+	private void updateResourceName(VXResource resource) {
+		if(resource == null) {
+			return;
+		}
+
+		String resourceName = getResourceName(resource.getAssetType(),
+											  resource.getName(),
+											  resource.getTables(),
+											  resource.getColumnFamilies(),
+											  resource.getColumns(),
+											  resource.getDatabases(),
+											  resource.getTopologies(),
+											  resource.getServices());
+
+		resource.setName(resourceName);
+	}
+
+	private String getResourceName(int assetType, String paths, String tables, String columnFamilies, String columns, String databases, String topologies, String services) {
+		StringBuilder sb = new StringBuilder();
+
+		switch(assetType) {
+			case RangerCommonEnums.ASSET_HDFS:
+				paths = emptyIfNull(paths);
+
+				sb.append(paths);
+			break;
+
+			case RangerCommonEnums.ASSET_HBASE:
+			{
+				tables         = emptyIfNull(tables);
+				columnFamilies = emptyIfNull(columnFamilies);
+				columns        = emptyIfNull(columns);
+
+				for(String column : columns.split(",")) {
+					for(String columnFamily : columnFamilies.split(",")) {
+						for(String table : tables.split(",")) {
+							if(sb.length() > 0) {
+								sb.append(",");
+							}
+
+							sb.append("/").append(table).append("/").append(columnFamily).append("/").append(column);
+						}
+					}
+				}
+			}
+			break;
+
+			case RangerCommonEnums.ASSET_HIVE:
+			{
+				databases = emptyIfNull(databases);
+				tables    = emptyIfNull(tables);
+				columns   = emptyIfNull(columns);
+
+				for(String column : columns.split(",")) {
+					for(String table : tables.split(",")) {
+						for(String database : databases.split(",")) {
+							if(sb.length() > 0) {
+								sb.append(",");
+							}
+
+							sb.append("/").append(database).append("/").append(table).append("/").append(column);
+						}
+					}
+				}
+			}
+			break;
+
+			case RangerCommonEnums.ASSET_KNOX:
+			{
+				topologies = emptyIfNull(topologies);
+				services   = emptyIfNull(services);
+
+				for(String service : services.split(",")) {
+					for(String topology : topologies.split(",")) {
+						if(sb.length() > 0) {
+							sb.append(",");
+						}
+
+						sb.append("/").append(topology).append("/").append(service);
+					}
+				}
+			}
+			break;
+
+			case RangerCommonEnums.ASSET_STORM:
+				topologies = emptyIfNull(topologies);
+
+				sb.append(topologies);
+			break;
+		}
+
+		return sb.toString();
+	}
+
+	private String emptyIfNull(String str) {
+		return str == null ? "" : str;
+	}
 	
 	private String getResourceString(List<String> values) {
 		String ret = null;
@@ -685,6 +800,7 @@ public class ServiceUtil {
 				ret.setServices(resString);
 			}
 		}
+		updateResourceName(ret);
 			
 		List<VXPermMap> vXPermMapList = getVXPermMapList(policy);
 			
@@ -832,12 +948,8 @@ public class ServiceUtil {
 				}
 				ipAddress = permMap.getIpAddress();
 			}
-			if (!userList.isEmpty()) {
-				vXPermObj.setUserList(userList);
-			}
-			if (!groupList.isEmpty()) {
-				vXPermObj.setGroupList(groupList);
-			}
+			vXPermObj.setUserList(userList);
+			vXPermObj.setGroupList(groupList);
 			vXPermObj.setPermList(permList);
 			vXPermObj.setIpAddress(ipAddress);
 
@@ -1016,8 +1128,6 @@ public class ServiceUtil {
 		RangerService service       = null;
 		List<VXPolicy> vXPolicyList = new ArrayList<VXPolicy>();
 
-		VXPolicyList  vXPolicyListObj  = new VXPolicyList();
-		
 		for ( RangerPolicy policy : rangerPolicyList) {
 			try {
 				service = svcStore.getServiceByName(policy.getService());
@@ -1033,8 +1143,8 @@ public class ServiceUtil {
 			
 			vXPolicyList.add(vXPolicy);
 		}
-		
-		vXPolicyListObj.setVXPolicies(vXPolicyList);
+
+		VXPolicyList vXPolicyListObj = new VXPolicyList(vXPolicyList);
 		
 		return vXPolicyListObj;
 		

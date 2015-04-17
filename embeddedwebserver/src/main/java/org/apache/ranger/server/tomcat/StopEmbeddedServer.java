@@ -58,6 +58,5 @@ public class StopEmbeddedServer extends EmbeddedServer {
 			System.exit(1);
 		}
 	}
-	
 
 }

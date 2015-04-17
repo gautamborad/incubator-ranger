@@ -113,7 +113,6 @@ public class RangerBizUtil {
 		auditDBType = PropertiesUtil.getProperty("ranger.audit.source.type",
 		auditDBType).toLowerCase();
 
-		
 		logger.info("Audit datasource is " + auditDBType);
 		random = new Random();
 	}
@@ -536,6 +535,23 @@ public class RangerBizUtil {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * return username of currently logged in user
+	 * 
+	 * @return
+	 */
+	public String getCurrentUserLoginId() {
+		String ret = null;
+
+		UserSessionBase currentUserSession = ContextUtil.getCurrentUserSession();
+
+		if (currentUserSession != null) {
+			ret = currentUserSession.getLoginId();
+		}
+
+		return ret;
 	}
 
 	/**

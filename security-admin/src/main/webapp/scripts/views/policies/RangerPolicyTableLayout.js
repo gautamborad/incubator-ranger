@@ -272,10 +272,8 @@ define(function(require){
 							XAUtil.blockUI('unblock');
 							that.collection.remove(model.get('id'));
 							XAUtil.notifySuccess('Success', localization.tt('msg.policyDeleteMsg'));
-							if(that.collection.length ==  0){
-								that.renderTable();
-								that.collection.fetch();
-							}
+							that.renderTable();
+							that.collection.fetch();
 						},
 						error: function (model, response, options) {
 							XAUtil.blockUI('unblock');
@@ -320,7 +318,7 @@ define(function(require){
 			var searchOpt = ['Policy Name','Group Name','User Name','Status'];//,'Start Date','End Date','Today'];
 			searchOpt = _.union(searchOpt, resourceSearchOpt)
 			var serverAttrName  = [{text : "Policy Name", label :"policyName"},{text : "Group Name", label :"group"},
-			                        {text : "User Name", label :"user"}, {text : "Status", label :"status"}];
+			                       {text : "User Name", label :"user"}, {text : "Status", label :"isEnabled"}];
 			                     // {text : 'Start Date',label :'startDate'},{text : 'End Date',label :'endDate'},
 				                 //  {text : 'Today',label :'today'}];
 			var serverRsrcAttrName = _.map(resourceSearchOpt,function(opt){ 

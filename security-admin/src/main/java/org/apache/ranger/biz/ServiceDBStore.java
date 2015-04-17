@@ -36,6 +36,7 @@ import org.apache.ranger.common.AppConstants;
 import org.apache.ranger.common.ContextUtil;
 import org.apache.ranger.common.DateUtil;
 import org.apache.ranger.common.MessageEnums;
+import org.apache.ranger.common.PasswordUtils;
 import org.apache.ranger.common.RESTErrorUtil;
 import org.apache.ranger.common.RangerCommonEnums;
 import org.apache.ranger.common.StringUtil;
@@ -57,6 +58,7 @@ import org.apache.ranger.db.XXPolicyResourceMapDao;
 import org.apache.ranger.db.XXResourceDefDao;
 import org.apache.ranger.db.XXServiceConfigDefDao;
 import org.apache.ranger.db.XXServiceConfigMapDao;
+import org.apache.ranger.db.XXServiceDao;
 import org.apache.ranger.entity.XXAccessTypeDef;
 import org.apache.ranger.entity.XXAccessTypeDefGrants;
 import org.apache.ranger.entity.XXContextEnricherDef;
@@ -171,6 +173,9 @@ public class ServiceDBStore extends AbstractServiceStore {
 	private static volatile boolean legacyServiceDefsInitDone = false;
 	private Boolean populateExistingBaseFields = false;
 	
+	public static final String HIDDEN_PASSWORD_STR = "*****";
+	public static final String CONFIG_KEY_PASSWORD = "password";
+	
 	@Override
 	public void init() throws Exception {
 		if (LOG.isDebugEnabled()) {
@@ -248,57 +253,72 @@ public class ServiceDBStore extends AbstractServiceStore {
 		XXServiceDef createdSvcDef = daoMgr.getXXServiceDef().getById(serviceDefId);
 		
 		XXServiceConfigDefDao xxServiceConfigDao = daoMgr.getXXServiceConfigDef();
-		for(RangerServiceConfigDef config : configs) {
+		for(int i = 0; i < configs.size(); i++) {
+			RangerServiceConfigDef config = configs.get(i);
+
 			XXServiceConfigDef xConfig = new XXServiceConfigDef();
 			xConfig = serviceDefService.populateRangerServiceConfigDefToXX(config, xConfig, createdSvcDef,
 					RangerServiceDefService.OPERATION_CREATE_CONTEXT);
+			xConfig.setOrder(i);
 			xConfig = xxServiceConfigDao.create(xConfig);
 		}
 		
 		XXResourceDefDao xxResDefDao = daoMgr.getXXResourceDef();
-		for(RangerResourceDef resource : resources) {
+		for(int i = 0; i < resources.size(); i++) {
+			RangerResourceDef resource = resources.get(i);
+
 			XXResourceDef parent = xxResDefDao.findByNameAndServiceDefId(resource.getParent(), serviceDefId);
 			Long parentId = (parent != null) ? parent.getId() : null;
 			
 			XXResourceDef xResource = new XXResourceDef();
 			xResource = serviceDefService.populateRangerResourceDefToXX(resource, xResource, createdSvcDef,
 					RangerServiceDefService.OPERATION_CREATE_CONTEXT);
+			xResource.setOrder(i);
 			xResource.setParent(parentId);
 			xResource = xxResDefDao.create(xResource);
 		}
 		
 		XXAccessTypeDefDao xxATDDao = daoMgr.getXXAccessTypeDef();
-		for(RangerAccessTypeDef accessType : accessTypes) {
+		for(int i = 0; i < accessTypes.size(); i++) {
+			RangerAccessTypeDef accessType = accessTypes.get(i);
+
 			XXAccessTypeDef xAccessType = new XXAccessTypeDef();
 			xAccessType = serviceDefService.populateRangerAccessTypeDefToXX(accessType, xAccessType, createdSvcDef,
 					RangerServiceDefService.OPERATION_CREATE_CONTEXT);
+			xAccessType.setOrder(i);
 			xAccessType = xxATDDao.create(xAccessType);
 			
 			Collection<String> impliedGrants = accessType.getImpliedGrants();
 			XXAccessTypeDefGrantsDao xxATDGrantDao = daoMgr.getXXAccessTypeDefGrants();
 			for(String impliedGrant : impliedGrants) {
 				XXAccessTypeDefGrants xImpliedGrant = new XXAccessTypeDefGrants();
-				xImpliedGrant.setAtdid(xAccessType.getId());
-				xImpliedGrant.setImpliedgrant(impliedGrant);
+				xImpliedGrant.setAtdId(xAccessType.getId());
+				xImpliedGrant.setImpliedGrant(impliedGrant);
 				xImpliedGrant = xxATDGrantDao.create(xImpliedGrant);
 			}
 		}
 		
 		XXPolicyConditionDefDao xxPolCondDao = daoMgr.getXXPolicyConditionDef();
-		for (RangerPolicyConditionDef policyCondition : policyConditions) {
+		for (int i = 0; i < policyConditions.size(); i++) {
+			RangerPolicyConditionDef policyCondition = policyConditions.get(i);
+
 			XXPolicyConditionDef xPolicyCondition = new XXPolicyConditionDef();
 			xPolicyCondition = serviceDefService
 					.populateRangerPolicyConditionDefToXX(policyCondition,
 							xPolicyCondition, createdSvcDef, RangerServiceDefService.OPERATION_CREATE_CONTEXT);
+			xPolicyCondition.setOrder(i);
 			xPolicyCondition = xxPolCondDao.create(xPolicyCondition);
 		}
 		
 		XXContextEnricherDefDao xxContextEnricherDao = daoMgr.getXXContextEnricherDef();
-		for (RangerContextEnricherDef contextEnricher : contextEnrichers) {
+		for (int i = 0; i < contextEnrichers.size(); i++) {
+			RangerContextEnricherDef contextEnricher = contextEnrichers.get(i);
+
 			XXContextEnricherDef xContextEnricher = new XXContextEnricherDef();
 			xContextEnricher = serviceDefService
 					.populateRangerContextEnricherDefToXX(contextEnricher,
 							xContextEnricher, createdSvcDef, RangerServiceDefService.OPERATION_CREATE_CONTEXT);
+			xContextEnricher.setOrder(i);
 			xContextEnricher = xxContextEnricherDao.create(xContextEnricher);
 		}
 		
@@ -310,9 +330,12 @@ public class ServiceDBStore extends AbstractServiceStore {
 			
 			List<RangerEnumElementDef> elements = vEnum.getElements();
 			XXEnumElementDefDao xxEnumEleDefDao = daoMgr.getXXEnumElementDef();
-			for(RangerEnumElementDef element : elements) {
+			for(int i = 0; i < elements.size(); i++) {
+				RangerEnumElementDef element = elements.get(i);
+
 				XXEnumElementDef xElement = new XXEnumElementDef();
 				xElement = serviceDefService.populateRangerEnumElementDefToXX(element, xElement, xEnum, RangerServiceDefService.OPERATION_CREATE_CONTEXT);
+				xElement.setOrder(i);
 				xElement = xxEnumEleDefDao.create(xElement);
 			}
 		}
@@ -327,34 +350,529 @@ public class ServiceDBStore extends AbstractServiceStore {
 	}
 
 	@Override
-	public RangerServiceDef updateServiceDef(RangerServiceDef serviceDef)
-			throws Exception {
+	public RangerServiceDef updateServiceDef(RangerServiceDef serviceDef) throws Exception {
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("==> ServiceDefDBStore.updateServiceDef(" + serviceDef + ")");
 		}
 
-		RangerServiceDef ret = null;
+		Long serviceDefId = serviceDef.getId();
 
-		// TODO: updateServiceDef()
-
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("<== ServiceDefDBStore.updateServiceDef(" + serviceDef + "): " + ret);
+		XXServiceDef existing = daoMgr.getXXServiceDef().getById(serviceDefId);
+		if (existing == null) {
+			throw restErrorUtil.createRESTException("no service-def exists with ID=" + serviceDef.getId(),
+					MessageEnums.DATA_NOT_FOUND);
 		}
 
-		return ret;
+		String existingName = existing.getName();
+
+		boolean renamed = !StringUtils.equalsIgnoreCase(serviceDef.getName(), existingName);
+
+		if (renamed) {
+			XXServiceDef renamedSVCDef = daoMgr.getXXServiceDef().findByName(serviceDef.getName());
+
+			if (renamedSVCDef != null) {
+				throw restErrorUtil.createRESTException(
+						"another service-def already exists with name '" + serviceDef.getName() + "'. ID="
+								+ renamedSVCDef.getId(), MessageEnums.DATA_NOT_UPDATABLE);
+			}
+		}
+
+		List<RangerServiceConfigDef> configs 			= serviceDef.getConfigs() != null 			? serviceDef.getConfigs()   		  : new ArrayList<RangerServiceConfigDef>();
+		List<RangerResourceDef> resources 				= serviceDef.getResources() != null  		? serviceDef.getResources() 		  : new ArrayList<RangerResourceDef>();
+		List<RangerAccessTypeDef> accessTypes 			= serviceDef.getAccessTypes() != null 		? serviceDef.getAccessTypes() 	  	  : new ArrayList<RangerAccessTypeDef>();
+		List<RangerPolicyConditionDef> policyConditions = serviceDef.getPolicyConditions() != null 	? serviceDef.getPolicyConditions() 	  : new ArrayList<RangerPolicyConditionDef>();
+		List<RangerContextEnricherDef> contextEnrichers = serviceDef.getContextEnrichers() != null 	? serviceDef.getContextEnrichers() 	  : new ArrayList<RangerContextEnricherDef>();
+		List<RangerEnumDef> enums 						= serviceDef.getEnums() != null 			? serviceDef.getEnums() 			  : new ArrayList<RangerEnumDef>();
+
+		Long version = serviceDef.getVersion();
+		if (version == null) {
+			version = new Long(1);
+			LOG.info("Found Version Value: `null`, so setting value of version to 1. While updating object version should not be null.");
+		} else {
+			version = new Long(version.longValue() + 1);
+		}
+		serviceDef.setVersion(version);
+		serviceDef = serviceDefService.update(serviceDef);
+		XXServiceDef createdSvcDef = daoMgr.getXXServiceDef().getById(serviceDefId);
+
+		updateChildObjectsOfServiceDef(createdSvcDef, configs, resources, accessTypes, policyConditions, contextEnrichers, enums);
+
+		RangerServiceDef updatedSvcDef = getServiceDef(serviceDefId);
+		dataHistService.createObjectDataHistory(updatedSvcDef, RangerDataHistService.ACTION_UPDATE);
+
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("<== ServiceDefDBStore.updateServiceDef(" + serviceDef + "): " + serviceDef);
+		}
+
+		return updatedSvcDef;
 	}
 
+	public void updateChildObjectsOfServiceDef(XXServiceDef createdSvcDef, List<RangerServiceConfigDef> configs,
+			List<RangerResourceDef> resources, List<RangerAccessTypeDef> accessTypes,
+			List<RangerPolicyConditionDef> policyConditions, List<RangerContextEnricherDef> contextEnrichers,
+			List<RangerEnumDef> enums) {
+
+		Long serviceDefId = createdSvcDef.getId();
+
+		List<XXServiceConfigDef> xxConfigs = daoMgr.getXXServiceConfigDef().findByServiceDefId(serviceDefId);
+		List<XXResourceDef> xxResources = daoMgr.getXXResourceDef().findByServiceDefId(serviceDefId);
+		List<XXAccessTypeDef> xxAccessTypes = daoMgr.getXXAccessTypeDef().findByServiceDefId(serviceDefId);
+		List<XXPolicyConditionDef> xxPolicyConditions = daoMgr.getXXPolicyConditionDef().findByServiceDefId(
+				serviceDefId);
+		List<XXContextEnricherDef> xxContextEnrichers = daoMgr.getXXContextEnricherDef().findByServiceDefId(
+				serviceDefId);
+		List<XXEnumDef> xxEnums = daoMgr.getXXEnumDef().findByServiceDefId(serviceDefId);
+
+		XXServiceConfigDefDao xxServiceConfigDao = daoMgr.getXXServiceConfigDef();
+		for (RangerServiceConfigDef config : configs) {
+			boolean found = false;
+			for (XXServiceConfigDef xConfig : xxConfigs) {
+				if (config.getId() != null && config.getId().equals(xConfig.getId())) {
+					found = true;
+					xConfig = serviceDefService.populateRangerServiceConfigDefToXX(config, xConfig, createdSvcDef,
+							RangerServiceDefService.OPERATION_UPDATE_CONTEXT);
+					xConfig = xxServiceConfigDao.update(xConfig);
+					config = serviceDefService.populateXXToRangerServiceConfigDef(xConfig);
+					break;
+				}
+			}
+			if (!found) {
+				XXServiceConfigDef xConfig = new XXServiceConfigDef();
+				xConfig = serviceDefService.populateRangerServiceConfigDefToXX(config, xConfig, createdSvcDef,
+						RangerServiceDefService.OPERATION_CREATE_CONTEXT);
+				xConfig = xxServiceConfigDao.create(xConfig);
+				config = serviceDefService.populateXXToRangerServiceConfigDef(xConfig);
+			}
+		}
+		for (XXServiceConfigDef xConfig : xxConfigs) {
+			boolean found = false;
+			for (RangerServiceConfigDef config : configs) {
+				if (xConfig.getId() != null && xConfig.getId().equals(config.getId())) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				xxServiceConfigDao.remove(xConfig);
+			}
+		}
+
+		XXResourceDefDao xxResDefDao = daoMgr.getXXResourceDef();
+		for (RangerResourceDef resource : resources) {
+			boolean found = false;
+			for (XXResourceDef xRes : xxResources) {
+				if (resource.getId() != null && resource.getId().equals(xRes.getId())) {
+					found = true;
+					xRes = serviceDefService.populateRangerResourceDefToXX(resource, xRes, createdSvcDef,
+							RangerServiceDefService.OPERATION_UPDATE_CONTEXT);
+					xxResDefDao.update(xRes);
+					resource = serviceDefService.populateXXToRangerResourceDef(xRes);
+					break;
+				}
+			}
+			if (!found) {
+				XXResourceDef parent = xxResDefDao.findByNameAndServiceDefId(resource.getParent(), serviceDefId);
+				Long parentId = (parent != null) ? parent.getId() : null;
+
+				XXResourceDef xResource = new XXResourceDef();
+				xResource = serviceDefService.populateRangerResourceDefToXX(resource, xResource, createdSvcDef,
+						RangerServiceDefService.OPERATION_CREATE_CONTEXT);
+				xResource.setParent(parentId);
+				xResource = xxResDefDao.create(xResource);
+			}
+		}
+		for (XXResourceDef xRes : xxResources) {
+			boolean found = false;
+			for (RangerResourceDef resource : resources) {
+				if (xRes.getId() != null && xRes.getId().equals(resource.getId())) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				List<XXPolicyResource> policyResList = daoMgr.getXXPolicyResource().findByResDefId(xRes.getId());
+				if (!stringUtil.isEmpty(policyResList)) {
+					throw restErrorUtil.createRESTException("Policy/Policies are referring to this resource: "
+							+ xRes.getName() + ". Please remove such references from policy before updating service-def.",
+							MessageEnums.DATA_NOT_UPDATABLE);
+				}
+				deleteXXResourceDef(xRes);
+			}
+		}
+
+		XXAccessTypeDefDao xxATDDao = daoMgr.getXXAccessTypeDef();
+		for (RangerAccessTypeDef access : accessTypes) {
+			boolean found = false;
+			for (XXAccessTypeDef xAccess : xxAccessTypes) {
+				if (access.getId() != null && access.getId().equals(xAccess.getId())) {
+					found = true;
+					xAccess = serviceDefService.populateRangerAccessTypeDefToXX(access, xAccess, createdSvcDef,
+							RangerServiceDefService.OPERATION_UPDATE_CONTEXT);
+					xAccess = xxATDDao.update(xAccess);
+
+					Collection<String> impliedGrants = access.getImpliedGrants();
+					XXAccessTypeDefGrantsDao xxATDGrantDao = daoMgr.getXXAccessTypeDefGrants();
+					List<String> xxImpliedGrants = xxATDGrantDao.findImpliedGrantsByATDId(xAccess.getId());
+					for (String impliedGrant : impliedGrants) {
+						boolean foundGrant = false;
+						for (String xImpliedGrant : xxImpliedGrants) {
+							if (StringUtils.equalsIgnoreCase(impliedGrant, xImpliedGrant)) {
+								foundGrant = true;
+								break;
+							}
+						}
+						if (!foundGrant) {
+							XXAccessTypeDefGrants xImpliedGrant = new XXAccessTypeDefGrants();
+							xImpliedGrant.setAtdId(xAccess.getId());
+							xImpliedGrant.setImpliedGrant(impliedGrant);
+							xImpliedGrant = xxATDGrantDao.create(xImpliedGrant);
+						}
+					}
+					for (String xImpliedGrant : xxImpliedGrants) {
+						boolean foundGrant = false;
+						for (String impliedGrant : impliedGrants) {
+							if (StringUtils.equalsIgnoreCase(xImpliedGrant, impliedGrant)) {
+								foundGrant = true;
+								break;
+							}
+						}
+						if (!foundGrant) {
+							XXAccessTypeDefGrants xATDGrant = xxATDGrantDao.findByNameAndATDId(xAccess.getId(),
+									xImpliedGrant);
+							xxATDGrantDao.remove(xATDGrant);
+
+						}
+					}
+					access = serviceDefService.populateXXToRangerAccessTypeDef(xAccess);
+					break;
+				}
+			}
+			if (!found) {
+				XXAccessTypeDef xAccessType = new XXAccessTypeDef();
+				xAccessType = serviceDefService.populateRangerAccessTypeDefToXX(access, xAccessType, createdSvcDef,
+						RangerServiceDefService.OPERATION_CREATE_CONTEXT);
+				xAccessType = xxATDDao.create(xAccessType);
+
+				Collection<String> impliedGrants = access.getImpliedGrants();
+				XXAccessTypeDefGrantsDao xxATDGrantDao = daoMgr.getXXAccessTypeDefGrants();
+				for (String impliedGrant : impliedGrants) {
+					XXAccessTypeDefGrants xImpliedGrant = new XXAccessTypeDefGrants();
+					xImpliedGrant.setAtdId(xAccessType.getId());
+					xImpliedGrant.setImpliedGrant(impliedGrant);
+					xImpliedGrant = xxATDGrantDao.create(xImpliedGrant);
+				}
+				access = serviceDefService.populateXXToRangerAccessTypeDef(xAccessType);
+			}
+		}
+
+		for (XXAccessTypeDef xAccess : xxAccessTypes) {
+			boolean found = false;
+			for (RangerAccessTypeDef access : accessTypes) {
+				if (xAccess.getId() != null && xAccess.getId().equals(access.getId())) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				List<XXPolicyItemAccess> polItemAccessList = daoMgr.getXXPolicyItemAccess().findByType(xAccess.getId());
+				if(!stringUtil.isEmpty(polItemAccessList)) {
+					throw restErrorUtil.createRESTException("Policy/Policies are referring to this access-type: "
+							+ xAccess.getName() + ". Please remove such references from policy before updating service-def.",
+							MessageEnums.DATA_NOT_UPDATABLE);
+				}
+				deleteXXAccessTypeDef(xAccess);
+			}
+		}
+
+		XXPolicyConditionDefDao xxPolCondDao = daoMgr.getXXPolicyConditionDef();
+		for (RangerPolicyConditionDef condition : policyConditions) {
+			boolean found = false;
+			for (XXPolicyConditionDef xCondition : xxPolicyConditions) {
+				if (condition.getId() != null && condition.getId().equals(xCondition.getId())) {
+					found = true;
+					xCondition = serviceDefService.populateRangerPolicyConditionDefToXX(condition, xCondition,
+							createdSvcDef, RangerServiceDefService.OPERATION_UPDATE_CONTEXT);
+					xCondition = xxPolCondDao.update(xCondition);
+					condition = serviceDefService.populateXXToRangerPolicyConditionDef(xCondition);
+					break;
+				}
+			}
+			if (!found) {
+				XXPolicyConditionDef xCondition = new XXPolicyConditionDef();
+				xCondition = serviceDefService.populateRangerPolicyConditionDefToXX(condition, xCondition,
+						createdSvcDef, RangerServiceDefService.OPERATION_CREATE_CONTEXT);
+				xCondition = xxPolCondDao.create(xCondition);
+				condition = serviceDefService.populateXXToRangerPolicyConditionDef(xCondition);
+			}
+		}
+		for(XXPolicyConditionDef xCondition : xxPolicyConditions) {
+			boolean found = false;
+			for(RangerPolicyConditionDef condition : policyConditions) {
+				if(xCondition.getId() != null && xCondition.getId().equals(condition.getId())) {
+					found = true;
+					break;
+				}
+			}
+			if(!found) {
+				List<XXPolicyItemCondition> policyItemCondList = daoMgr.getXXPolicyItemCondition()
+						.findByPolicyConditionDefId(xCondition.getId());
+				if(!stringUtil.isEmpty(policyItemCondList)) {
+					throw restErrorUtil.createRESTException("Policy/Policies are referring to this policy-condition: "
+							+ xCondition.getName() + ". Please remove such references from policy before updating service-def.",
+							MessageEnums.DATA_NOT_UPDATABLE);
+				}
+				for(XXPolicyItemCondition policyItemCond : policyItemCondList) {
+					daoMgr.getXXPolicyItemCondition().remove(policyItemCond);
+				}
+				xxPolCondDao.remove(xCondition);
+			}
+		}
+
+		XXContextEnricherDefDao xxContextEnricherDao = daoMgr.getXXContextEnricherDef();
+		for (RangerContextEnricherDef context : contextEnrichers) {
+			boolean found = false;
+			for (XXContextEnricherDef xContext : xxContextEnrichers) {
+				if (context.getId() != null && context.getId().equals(xContext.getId())) {
+					found = true;
+					xContext = serviceDefService.populateRangerContextEnricherDefToXX(context, xContext, createdSvcDef,
+							RangerServiceDefService.OPERATION_UPDATE_CONTEXT);
+					xContext = xxContextEnricherDao.update(xContext);
+					context = serviceDefService.populateXXToRangerContextEnricherDef(xContext);
+					break;
+				}
+			}
+			if (!found) {
+				XXContextEnricherDef xContext = new XXContextEnricherDef();
+				xContext = serviceDefService.populateRangerContextEnricherDefToXX(context, xContext, createdSvcDef,
+						RangerServiceDefService.OPERATION_UPDATE_CONTEXT);
+				context = serviceDefService.populateXXToRangerContextEnricherDef(xContext);
+			}
+		}
+		for (XXContextEnricherDef xContext : xxContextEnrichers) {
+			boolean found = false;
+			for (RangerContextEnricherDef context : contextEnrichers) {
+				if (xContext.getId() != null && xContext.getId().equals(context.getId())) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				daoMgr.getXXContextEnricherDef().remove(xContext);
+			}
+		}
+
+		XXEnumDefDao xxEnumDefDao = daoMgr.getXXEnumDef();
+		for (RangerEnumDef enumDef : enums) {
+			boolean found = false;
+			for (XXEnumDef xEnumDef : xxEnums) {
+				if (enumDef.getId() != null && enumDef.getId().equals(xEnumDef.getId())) {
+					found = true;
+					xEnumDef = serviceDefService.populateRangerEnumDefToXX(enumDef, xEnumDef, createdSvcDef,
+							RangerServiceDefService.OPERATION_UPDATE_CONTEXT);
+					xEnumDef = xxEnumDefDao.update(xEnumDef);
+
+					XXEnumElementDefDao xEnumEleDao = daoMgr.getXXEnumElementDef();
+					List<XXEnumElementDef> xxEnumEleDefs = xEnumEleDao.findByEnumDefId(xEnumDef.getId());
+					List<RangerEnumElementDef> enumEleDefs = enumDef.getElements();
+
+					for (RangerEnumElementDef eleDef : enumEleDefs) {
+						boolean foundEle = false;
+						for (XXEnumElementDef xEleDef : xxEnumEleDefs) {
+							if (eleDef.getId() != null && eleDef.getId().equals(xEleDef.getId())) {
+								foundEle = true;
+								xEleDef = serviceDefService.populateRangerEnumElementDefToXX(eleDef, xEleDef, xEnumDef,
+										RangerServiceDefService.OPERATION_UPDATE_CONTEXT);
+								xEleDef = xEnumEleDao.update(xEleDef);
+								break;
+							}
+						}
+						if (!foundEle) {
+							XXEnumElementDef xElement = new XXEnumElementDef();
+							xElement = serviceDefService.populateRangerEnumElementDefToXX(eleDef, xElement, xEnumDef,
+									RangerServiceDefService.OPERATION_CREATE_CONTEXT);
+							xElement = xEnumEleDao.create(xElement);
+						}
+					}
+					for (XXEnumElementDef xxEleDef : xxEnumEleDefs) {
+						boolean foundEle = false;
+						for (RangerEnumElementDef enumEle : enumEleDefs) {
+							if (xxEleDef.getId() != null && xxEleDef.getId().equals(enumEle.getId())) {
+								foundEle = true;
+								break;
+							}
+						}
+						if (!foundEle) {
+							xEnumEleDao.remove(xxEleDef);
+						}
+					}
+					enumDef = serviceDefService.populateXXToRangerEnumDef(xEnumDef);
+					break;
+				}
+			}
+			if (!found) {
+				XXEnumDef xEnum = new XXEnumDef();
+				xEnum = serviceDefService.populateRangerEnumDefToXX(enumDef, xEnum, createdSvcDef,
+						RangerServiceDefService.OPERATION_CREATE_CONTEXT);
+				xEnum = xxEnumDefDao.create(xEnum);
+
+				List<RangerEnumElementDef> elements = enumDef.getElements();
+				XXEnumElementDefDao xxEnumEleDefDao = daoMgr.getXXEnumElementDef();
+				for (RangerEnumElementDef element : elements) {
+					XXEnumElementDef xElement = new XXEnumElementDef();
+					xElement = serviceDefService.populateRangerEnumElementDefToXX(element, xElement, xEnum,
+							RangerServiceDefService.OPERATION_CREATE_CONTEXT);
+					xElement = xxEnumEleDefDao.create(xElement);
+				}
+				enumDef = serviceDefService.populateXXToRangerEnumDef(xEnum);
+			}
+		}
+		for (XXEnumDef xEnumDef : xxEnums) {
+			boolean found = false;
+			for (RangerEnumDef enumDef : enums) {
+				if (xEnumDef.getId() != null && xEnumDef.getId().equals(enumDef.getId())) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				List<XXEnumElementDef> enumEleDefList = daoMgr.getXXEnumElementDef().findByEnumDefId(xEnumDef.getId());
+				for (XXEnumElementDef eleDef : enumEleDefList) {
+					daoMgr.getXXEnumElementDef().remove(eleDef);
+				}
+				xxEnumDefDao.remove(xEnumDef);
+			}
+		}
+	}
+	
 	@Override
-	public void deleteServiceDef(Long servceId) throws Exception {
+	public void deleteServiceDef(Long serviceDefId) throws Exception {
+		deleteServiceDef(serviceDefId, false);
+	}
+
+	public void deleteServiceDef(Long serviceDefId, boolean forceDelete) throws Exception {
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("==> ServiceDefDBStore.deleteServiceDef(" + servceId + ")");
+			LOG.debug("==> ServiceDefDBStore.deleteServiceDef(" + serviceDefId + ")");
 		}
 
-		// TODO: deleteServiceDef()
+		RangerServiceDef serviceDef = getServiceDef(serviceDefId);
+		if(serviceDef == null) {
+			throw restErrorUtil.createRESTException("No Service Definiton found for Id: " + serviceDefId,
+					MessageEnums.DATA_NOT_FOUND);
+		}
+		
+		if (!forceDelete) {
+			List<XXService> svcDefServiceList = daoMgr.getXXService().findByServiceDefId(serviceDefId);
+			if (!stringUtil.isEmpty(svcDefServiceList)) {
+				throw restErrorUtil.createRESTException(
+						"Services exists under given service definition, can't delete Service-Def: "
+								+ serviceDef.getName(), MessageEnums.OPER_NOT_ALLOWED_FOR_ENTITY);
+			}
+		}
+
+		List<XXAccessTypeDef> accTypeDefs = daoMgr.getXXAccessTypeDef().findByServiceDefId(serviceDefId);
+		for(XXAccessTypeDef accessType : accTypeDefs) {
+			deleteXXAccessTypeDef(accessType);
+		}
+		
+		XXContextEnricherDefDao xContextEnricherDao = daoMgr.getXXContextEnricherDef();
+		List<XXContextEnricherDef> contextEnrichers = xContextEnricherDao.findByServiceDefId(serviceDefId);
+		for(XXContextEnricherDef context : contextEnrichers) {
+			xContextEnricherDao.remove(context);
+		}
+		
+		XXEnumDefDao enumDefDao = daoMgr.getXXEnumDef();
+		List<XXEnumDef> enumDefList = enumDefDao.findByServiceDefId(serviceDefId);
+		for (XXEnumDef enumDef : enumDefList) {
+			List<XXEnumElementDef> enumEleDefList = daoMgr.getXXEnumElementDef().findByEnumDefId(enumDef.getId());
+			for (XXEnumElementDef eleDef : enumEleDefList) {
+				daoMgr.getXXEnumElementDef().remove(eleDef);
+			}
+			enumDefDao.remove(enumDef);
+		}
+		
+		XXPolicyConditionDefDao policyCondDao = daoMgr.getXXPolicyConditionDef();
+		List<XXPolicyConditionDef> policyCondList = policyCondDao.findByServiceDefId(serviceDefId);
+		
+		for (XXPolicyConditionDef policyCond : policyCondList) {
+			List<XXPolicyItemCondition> policyItemCondList = daoMgr.getXXPolicyItemCondition().findByPolicyConditionDefId(policyCond.getId());
+			for (XXPolicyItemCondition policyItemCond : policyItemCondList) {
+				daoMgr.getXXPolicyItemCondition().remove(policyItemCond);
+			}
+			policyCondDao.remove(policyCond);
+		}
+		
+		List<XXResourceDef> resDefList = daoMgr.getXXResourceDef().findByServiceDefId(serviceDefId);
+		for(XXResourceDef resDef : resDefList) {
+			deleteXXResourceDef(resDef);
+		}
+		
+		XXServiceConfigDefDao configDefDao = daoMgr.getXXServiceConfigDef();
+		List<XXServiceConfigDef> configDefList = configDefDao.findByServiceDefId(serviceDefId);
+		for(XXServiceConfigDef configDef : configDefList) {
+			configDefDao.remove(configDef);
+		}
+		
+		XXServiceDao serviceDao = daoMgr.getXXService();
+		List<XXService> serviceList = serviceDao.findByServiceDefId(serviceDefId);
+		for(XXService service : serviceList) {
+			deleteService(service.getId());
+		}
+		
+		Long version = serviceDef.getVersion();
+		if(version == null) {
+			version = new Long(1);
+			LOG.info("Found Version Value: `null`, so setting value of version to 1, While updating object, version should not be null.");
+		} else {
+			version = new Long(version.longValue() + 1);
+		}
+		serviceDef.setVersion(version);
+		
+		serviceDefService.delete(serviceDef);
+		LOG.info("ServiceDefinition has been deleted successfully. Service-Def Name: " + serviceDef.getName());
+		
+		dataHistService.createObjectDataHistory(serviceDef, RangerDataHistService.ACTION_DELETE);
 
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("<== ServiceDefDBStore.deleteServiceDef(" + servceId + ")");
+			LOG.debug("<== ServiceDefDBStore.deleteServiceDef(" + serviceDefId + ")");
 		}
+	}
+	
+	public void deleteXXAccessTypeDef(XXAccessTypeDef xAccess) {
+		List<XXAccessTypeDefGrants> atdGrantsList = daoMgr.getXXAccessTypeDefGrants().findByATDId(xAccess.getId());
+
+		for (XXAccessTypeDefGrants atdGrant : atdGrantsList) {
+			daoMgr.getXXAccessTypeDefGrants().remove(atdGrant);
+		}
+
+		List<XXPolicyItemAccess> policyItemAccessList = daoMgr.getXXPolicyItemAccess().findByType(xAccess.getId());
+		for (XXPolicyItemAccess policyItemAccess : policyItemAccessList) {
+			daoMgr.getXXPolicyItemAccess().remove(policyItemAccess);
+		}
+		daoMgr.getXXAccessTypeDef().remove(xAccess);
+	}
+
+	public void deleteXXResourceDef(XXResourceDef xRes) {
+
+		List<XXResourceDef> xChildObjs = daoMgr.getXXResourceDef().findByParentResId(xRes.getId());
+		for(XXResourceDef childRes : xChildObjs) {			
+			deleteXXResourceDef(childRes);
+		}
+
+		List<XXPolicyResource> xxResources = daoMgr.getXXPolicyResource().findByResDefId(xRes.getId());
+		for (XXPolicyResource xPolRes : xxResources) {
+			deleteXXPolicyResource(xPolRes);
+		}
+
+		daoMgr.getXXResourceDef().remove(xRes);
+	}
+
+	public void deleteXXPolicyResource(XXPolicyResource xPolRes) {
+		List<XXPolicyResourceMap> polResMapList = daoMgr.getXXPolicyResourceMap().findByPolicyResId(xPolRes.getId());
+		XXPolicyResourceMapDao polResMapDao = daoMgr.getXXPolicyResourceMap();
+		for (XXPolicyResourceMap xxPolResMap : polResMapList) {
+			polResMapDao.remove(xxPolResMap);
+		}
+		daoMgr.getXXPolicyResource().remove(xPolRes);
 	}
 
 	@Override
@@ -483,6 +1001,15 @@ public class ServiceDBStore extends AbstractServiceStore {
 					}
 				}
 
+				if (StringUtils.equalsIgnoreCase(configKey, CONFIG_KEY_PASSWORD)) {
+					String encryptedPwd = PasswordUtils.encryptPassword(configValue);
+					String decryptedPwd = PasswordUtils.decryptPassword(encryptedPwd);
+
+					if (StringUtils.equals(decryptedPwd, configValue)) {
+						configValue = encryptedPwd;
+					}
+				}
+
 				XXServiceConfigMap xConfMap = new XXServiceConfigMap();
 				xConfMap = (XXServiceConfigMap) rangerAuditFields.populateAuditFields(xConfMap, xCreatedService);
 				xConfMap.setServiceId(xCreatedService.getId());
@@ -568,8 +1095,13 @@ public class ServiceDBStore extends AbstractServiceStore {
 
 		XXService xUpdService = daoMgr.getXXService().getById(service.getId());
 		
+		String oldPassword = null;
+		
 		List<XXServiceConfigMap> dbConfigMaps = daoMgr.getXXServiceConfigMap().findByServiceId(service.getId());
 		for(XXServiceConfigMap dbConfigMap : dbConfigMaps) {
+			if(StringUtils.equalsIgnoreCase(dbConfigMap.getConfigkey(), CONFIG_KEY_PASSWORD)) {
+				oldPassword = dbConfigMap.getConfigvalue();
+			}
 			daoMgr.getXXServiceConfigMap().remove(dbConfigMap);
 		}
 		
@@ -589,6 +1121,19 @@ public class ServiceDBStore extends AbstractServiceStore {
 					vXUser.setName(userName);
 					vXUser.setUserSource(RangerCommonEnums.USER_EXTERNAL);
 					vXUser = xUserMgr.createXUser(vXUser);
+				}
+			}
+
+			if (StringUtils.equalsIgnoreCase(configKey, CONFIG_KEY_PASSWORD)) {
+				if (StringUtils.equalsIgnoreCase(configValue, HIDDEN_PASSWORD_STR)) {
+					configValue = oldPassword;
+				} else {
+					String encryptedPwd = PasswordUtils.encryptPassword(configValue);
+					String decryptedPwd = PasswordUtils.decryptPassword(encryptedPwd);
+
+					if (StringUtils.equals(decryptedPwd, configValue)) {
+						configValue = encryptedPwd;
+					}
 				}
 			}
 
@@ -1000,29 +1545,27 @@ public class ServiceDBStore extends AbstractServiceStore {
 
 		ServicePolicies ret = null;
 
-		RangerService service = getServiceByName(serviceName);
+		XXService serviceDbObj = daoMgr.getXXService().findByName(serviceName);
 
-		if(service == null) {
-			throw new Exception("service does not exist - name=" + serviceName);
+		if(serviceDbObj == null) {
+			throw new Exception("service does not exist. name=" + serviceName);
 		}
 
-		RangerServiceDef serviceDef = getServiceDefByName(service.getType());
+		if(lastKnownVersion == null || serviceDbObj.getPolicyVersion() == null || !lastKnownVersion.equals(serviceDbObj.getPolicyVersion())) {
+			RangerServiceDef serviceDef = getServiceDef(serviceDbObj.getType());
 
-		if(serviceDef == null) {
-			throw new Exception(service.getType() + ": unknown service-def)");
-		}
+			if(serviceDef == null) {
+				throw new Exception("service-def does not exist. id=" + serviceDbObj.getType());
+			}
 
-		if(lastKnownVersion == null || service.getPolicyVersion() == null || lastKnownVersion.longValue() != service.getPolicyVersion().longValue()) {
-			SearchFilter filter = new SearchFilter(SearchFilter.SERVICE_NAME, serviceName);
-
-			List<RangerPolicy> policies = getServicePolicies(serviceName, filter);
+			List<RangerPolicy> policies = getServicePolicies(serviceName, null);
 
 			ret = new ServicePolicies();
 
-			ret.setServiceId(service.getId());
-			ret.setServiceName(service.getName());
-			ret.setPolicyVersion(service.getPolicyVersion());
-			ret.setPolicyUpdateTime(service.getPolicyUpdateTime());
+			ret.setServiceId(serviceDbObj.getId());
+			ret.setServiceName(serviceDbObj.getName());
+			ret.setPolicyVersion(serviceDbObj.getPolicyVersion());
+			ret.setPolicyUpdateTime(serviceDbObj.getPolicyUpdateTime());
 			ret.setPolicies(policies);
 			ret.setServiceDef(serviceDef);
 		}
@@ -1030,6 +1573,7 @@ public class ServiceDBStore extends AbstractServiceStore {
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("<== ServiceDBStore.getServicePoliciesIfUpdated(" + serviceName + ", " + lastKnownVersion + "): count=" + ((ret == null || ret.getPolicies() == null) ? 0 : ret.getPolicies().size()));
 		}
+
 		return ret;
 	}
 	
@@ -1121,10 +1665,24 @@ public class ServiceDBStore extends AbstractServiceStore {
 	}
 	
 	private void handlePolicyUpdate(RangerService service) throws Exception {
-		if(service == null) {
+		updatePolicyVersion(service);
+	}
+
+	private void updatePolicyVersion(RangerService service) throws Exception {
+		if(service == null || service.getId() == null) {
 			return;
 		}
-		
+
+		XXServiceDao serviceDao = daoMgr.getXXService();
+
+		XXService serviceDbObj = serviceDao.getById(service.getId());
+
+		if(serviceDbObj == null) {
+			LOG.warn("updatePolicyVersion(serviceId=" + service.getId() + "): service not found");
+
+			return;
+		}
+
 		Long policyVersion = service.getPolicyVersion();
 
 		if(policyVersion == null) {
@@ -1132,24 +1690,31 @@ public class ServiceDBStore extends AbstractServiceStore {
 		} else {
 			policyVersion = new Long(policyVersion.longValue() + 1);
 		}
-		
+
 		service.setPolicyVersion(policyVersion);
 		service.setPolicyUpdateTime(new Date());
-		service = updateService(service);
+
+		serviceDbObj.setPolicyVersion(service.getPolicyVersion());
+		serviceDbObj.setPolicyUpdateTime(service.getPolicyUpdateTime());
+
+		serviceDao.update(serviceDbObj);
 	}
-	
+
 	private void createNewPolicyItemsForPolicy(RangerPolicy policy, XXPolicy xPolicy, List<RangerPolicyItem> policyItems, XXServiceDef xServiceDef) {
 		
-		for (RangerPolicyItem policyItem : policyItems) {
+		for (int itemOrder = 0; itemOrder < policyItems.size(); itemOrder++) {
+			RangerPolicyItem policyItem = policyItems.get(itemOrder);
 			XXPolicyItem xPolicyItem = new XXPolicyItem();
 			xPolicyItem = (XXPolicyItem) rangerAuditFields.populateAuditFields(
 					xPolicyItem, xPolicy);
 			xPolicyItem.setDelegateAdmin(policyItem.getDelegateAdmin());
 			xPolicyItem.setPolicyId(policy.getId());
+			xPolicyItem.setOrder(itemOrder);
 			xPolicyItem = daoMgr.getXXPolicyItem().create(xPolicyItem);
 
 			List<RangerPolicyItemAccess> accesses = policyItem.getAccesses();
-			for (RangerPolicyItemAccess access : accesses) {
+			for (int i = 0; i < accesses.size(); i++) {
+				RangerPolicyItemAccess access = accesses.get(i);
 
 				XXAccessTypeDef xAccTypeDef = daoMgr.getXXAccessTypeDef()
 						.findByNameAndServiceId(access.getType(),
@@ -1166,11 +1731,14 @@ public class ServiceDBStore extends AbstractServiceStore {
 
 				xPolItemAcc.setType(xAccTypeDef.getId());
 				xPolItemAcc.setPolicyitemid(xPolicyItem.getId());
+				xPolItemAcc.setOrder(i);
 				xPolItemAcc = daoMgr.getXXPolicyItemAccess()
 						.create(xPolItemAcc);
 			}
 			List<String> users = policyItem.getUsers();
-			for(String user : users) {
+			for(int i = 0; i < users.size(); i++) {
+				String user = users.get(i);
+
 				XXUser xUser = daoMgr.getXXUser().findByUserName(user);
 				if(xUser == null) {
 					LOG.info("User does not exists with username: " 
@@ -1181,11 +1749,14 @@ public class ServiceDBStore extends AbstractServiceStore {
 				xUserPerm = (XXPolicyItemUserPerm) rangerAuditFields.populateAuditFields(xUserPerm, xPolicyItem);
 				xUserPerm.setUserId(xUser.getId());
 				xUserPerm.setPolicyItemId(xPolicyItem.getId());
+				xUserPerm.setOrder(i);
 				xUserPerm = daoMgr.getXXPolicyItemUserPerm().create(xUserPerm);
 			}
 			
 			List<String> groups = policyItem.getGroups();
-			for(String group : groups) {
+			for(int i = 0; i < groups.size(); i++) {
+				String group = groups.get(i);
+
 				XXGroup xGrp = daoMgr.getXXGroup().findByGroupName(group);
 				if(xGrp == null) {
 					LOG.info("Group does not exists with groupName: " 
@@ -1196,6 +1767,7 @@ public class ServiceDBStore extends AbstractServiceStore {
 				xGrpPerm = (XXPolicyItemGroupPerm) rangerAuditFields.populateAuditFields(xGrpPerm, xPolicyItem);
 				xGrpPerm.setGroupId(xGrp.getId());
 				xGrpPerm.setPolicyItemId(xPolicyItem.getId());
+				xGrpPerm.setOrder(i);
 				xGrpPerm = daoMgr.getXXPolicyItemGroupPerm().create(xGrpPerm);
 			}
 			
@@ -1212,12 +1784,14 @@ public class ServiceDBStore extends AbstractServiceStore {
 					continue;
 				}
 				
-				for(String value : condition.getValues()) {
+				for(int i = 0; i < condition.getValues().size(); i++) {
+					String value = condition.getValues().get(i);
 					XXPolicyItemCondition xPolItemCond = new XXPolicyItemCondition();
 					xPolItemCond = (XXPolicyItemCondition) rangerAuditFields.populateAuditFields(xPolItemCond, xPolicyItem);
 					xPolItemCond.setPolicyItemId(xPolicyItem.getId());
 					xPolItemCond.setType(xPolCond.getId());
 					xPolItemCond.setValue(value);
+					xPolItemCond.setOrder(i);
 					xPolItemCond = daoMgr.getXXPolicyItemCondition().create(xPolItemCond);
 				}
 			}
@@ -1247,11 +1821,12 @@ public class ServiceDBStore extends AbstractServiceStore {
 			xPolRes = daoMgr.getXXPolicyResource().create(xPolRes);
 
 			List<String> values = policyRes.getValues();
-			for (String value : values) {
+			for(int i = 0; i < values.size(); i++) {
 				XXPolicyResourceMap xPolResMap = new XXPolicyResourceMap();
 				xPolResMap = (XXPolicyResourceMap) rangerAuditFields.populateAuditFields(xPolResMap, xPolRes);
 				xPolResMap.setResourceId(xPolRes.getId());
-				xPolResMap.setValue(value);
+				xPolResMap.setValue(values.get(i));
+				xPolResMap.setOrder(i);
 
 				xPolResMap = daoMgr.getXXPolicyResourceMap().create(xPolResMap);
 			}

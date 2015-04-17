@@ -88,10 +88,10 @@ http://www.springframework.org/schema/util/spring-util.xsd">
 		<property name="locations">
 			<list>
 				<!-- <value>classpath:xa_default.properties</value> -->
-				<!-- <value>classpath:/conf.dist/xa_system.properties</value> -->
-				<value>classpath:xa_custom.properties</value>
-				<!-- <value>classpath:/conf.dist/xa_ldap.properties</value> -->
-				<value>classpath:/conf.dist/ranger-admin-site.xml</value>
+				<!-- <value>classpath:xa_system.properties</value> -->
+				<!-- <value>classpath:xa_custom.properties</value> -->
+				<!-- <value>classpath:xa_ldap.properties</value> -->
+				<value>classpath:ranger-admin-site.xml</value>
 			</list>
 		</property>
 		<property name="propertiesPersister" ref="xmlPropertyConfigurer" />

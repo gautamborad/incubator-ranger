@@ -19,6 +19,7 @@
 
 package org.apache.ranger.common;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -29,65 +30,65 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
 import org.springframework.util.DefaultPropertiesPersister;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class XMLPropertiesUtil extends DefaultPropertiesPersister {
 	private static Logger logger = Logger.getLogger(XMLPropertiesUtil.class);
-//	protected List<String> xmlLocations = new ArrayList<String>();
-//
-//	public List<String> getXmlLocations() {
-//		return xmlLocations;
-//	}
-//
-//	public void setXmlLocations(List<String> xmlLocations) {
-//		this.xmlLocations = xmlLocations;
-//	}
 
 	public XMLPropertiesUtil() {
-	}
-
-	public Map<String, String> processProperties(InputStream inputStream) {
-		Configuration configuration = getRANGERConf(inputStream);
-		Map<String, String> propertiesMap = new HashMap<String, String>();
-		for (Iterator<Entry<String, String>> configurationIterator = configuration
-				.iterator(); configurationIterator.hasNext();) {
-			Map.Entry<String, String> configurationEntry = (Map.Entry<String, String>) configurationIterator
-					.next();
-			propertiesMap.put(configurationEntry.getKey().trim(),
-					configurationEntry.getValue().trim());
-		}
-
-		return propertiesMap;
-	}
-
-	public static Configuration getRANGERConf(InputStream inputStream) {
-		return getConfiguration(false, inputStream);
-	}
-
-	static Configuration getConfiguration(boolean loadHadoopDefaults,
-			InputStream inputStream) {
-		Configuration conf = new Configuration(loadHadoopDefaults);
-		if (inputStream != null) {
-			try {
-				conf.addResource(inputStream);
-
-			} catch (Exception ex) {
-				logger.error(ex.getMessage());
-				ex.printStackTrace();
-				throw new RuntimeException(ex);
-			}
-		} else {
-			conf.addResource(inputStream);
-		}
-		return conf;
 	}
 
 	@Override
 	public void loadFromXml(Properties properties, InputStream inputStream)
 			throws IOException {
-		properties.putAll(processProperties(inputStream));
+		try {
+			DocumentBuilderFactory xmlDocumentBuilderFactory = DocumentBuilderFactory
+					.newInstance();
+			xmlDocumentBuilderFactory.setIgnoringComments(true);
+			xmlDocumentBuilderFactory.setNamespaceAware(true);
+			DocumentBuilder xmlDocumentBuilder = xmlDocumentBuilderFactory
+					.newDocumentBuilder();
+			Document xmlDocument = xmlDocumentBuilder.parse(inputStream);
+			xmlDocument.getDocumentElement().normalize();
+
+			NodeList nList = xmlDocument.getElementsByTagName("property");
+
+			for (int temp = 0; temp < nList.getLength(); temp++) {
+
+				Node nNode = nList.item(temp);
+
+				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+
+					Element eElement = (Element) nNode;
+
+					String propertyName = "";
+					String propertyValue = "";
+					if (eElement.getElementsByTagName("name").item(0) != null) {
+						propertyName = eElement.getElementsByTagName("name")
+								.item(0).getTextContent().trim();
+					}
+					if (eElement.getElementsByTagName("value").item(0) != null) {
+						propertyValue = eElement.getElementsByTagName("value")
+								.item(0).getTextContent().trim();
+					}
+
+					properties.put(propertyName, propertyValue);
+
+				}
+				logger.info("ranger site properties loaded successfully.")
+			}
+		} catch (Exception e) {
+			logger.error("Error loading : ", e);
+		}
 	}
 
 }

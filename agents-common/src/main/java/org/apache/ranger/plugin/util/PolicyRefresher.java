@@ -29,7 +29,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.ranger.admin.client.RangerAdminClient;
-import org.apache.ranger.plugin.policyengine.RangerPolicyEngine;
+import org.apache.ranger.plugin.service.RangerBasePlugin;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -38,24 +38,24 @@ import com.google.gson.GsonBuilder;
 public class PolicyRefresher extends Thread {
 	private static final Log LOG = LogFactory.getLog(PolicyRefresher.class);
 
-	private RangerPolicyEngine policyEngine      = null;
-	private String             serviceType       = null;
-	private String             serviceName       = null;
-	private RangerAdminClient  rangerAdmin       = null;
-	private long               pollingIntervalMs = 30 * 1000;
-	private String             cacheFile         = null;
+	private final RangerBasePlugin  plugIn;
+	private final String            serviceType;
+	private final String            serviceName;
+	private final RangerAdminClient rangerAdmin;
+	private final String            cacheFile;
+	private final Gson              gson;
 
-	private long    lastKnownVersion = -1;
-	private Gson    gson             = null;
+	private long pollingIntervalMs = 30 * 1000;
+	private long lastKnownVersion  = -1;
 
 
 
-	public PolicyRefresher(RangerPolicyEngine policyEngine, String serviceType, String appId, String serviceName, RangerAdminClient rangerAdmin, long pollingIntervalMs, String cacheDir) {
+	public PolicyRefresher(RangerBasePlugin plugIn, String serviceType, String appId, String serviceName, RangerAdminClient rangerAdmin, long pollingIntervalMs, String cacheDir) {
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("==> PolicyRefresher(serviceName=" + serviceName + ").PolicyRefresher()");
 		}
 
-		this.policyEngine      = policyEngine;
+		this.plugIn            = plugIn;
 		this.serviceType       = serviceType;
 		this.serviceName       = serviceName;
 		this.rangerAdmin       = rangerAdmin;
@@ -71,11 +71,13 @@ public class PolicyRefresher extends Thread {
 
 		this.cacheFile = cacheDir == null ? null : (cacheDir + File.separator + cacheFilename);
 
-        try {
-        	this.gson = new GsonBuilder().setDateFormat("yyyyMMdd-HH:mm:ss.SSS-Z").setPrettyPrinting().create();
+		Gson gson = null;
+		try {
+			gson = new GsonBuilder().setDateFormat("yyyyMMdd-HH:mm:ss.SSS-Z").setPrettyPrinting().create();
 		} catch(Throwable excp) {
 			LOG.fatal("PolicyRefresher(): failed to create GsonBuilder object", excp);
 		}
+		this.gson = gson;
 
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("<== PolicyRefresher(serviceName=" + serviceName + ").PolicyRefresher()");
@@ -83,10 +85,10 @@ public class PolicyRefresher extends Thread {
 	}
 
 	/**
-	 * @return the policyEngine
+	 * @return the plugIn
 	 */
-	public RangerPolicyEngine getPolicyEngine() {
-		return policyEngine;
+	public RangerBasePlugin getPlugin() {
+		return plugIn;
 	}
 
 	/**
@@ -157,17 +159,17 @@ public class PolicyRefresher extends Thread {
 
 		        	if(!StringUtils.equals(serviceName, svcPolicies.getServiceName())) {
 		        		LOG.warn("PolicyRefresher(serviceName=" + serviceName + "): ignoring unexpected serviceName '" + svcPolicies.getServiceName() + "' in service-store");
+
+		        		svcPolicies.setServiceName(serviceName);
 		        	}
 
-		        	if(LOG.isDebugEnabled()) {
-						LOG.debug("PolicyRefresher(serviceName=" + serviceName + "): found updated version. lastKnownVersion=" + lastKnownVersion + "; newVersion=" + newVersion);
-					}
+					LOG.info("PolicyRefresher(serviceName=" + serviceName + "): found updated version. lastKnownVersion=" + lastKnownVersion + "; newVersion=" + newVersion);
 
 					saveToCache(svcPolicies);
 
-		        	lastKnownVersion = svcPolicies.getPolicyVersion() == null ? -1 : svcPolicies.getPolicyVersion().longValue();
+		        	lastKnownVersion = newVersion;
 
-					policyEngine.setPolicies(serviceName, svcPolicies.getServiceDef(), svcPolicies.getPolicies());
+					plugIn.setPolicies(svcPolicies);
 				} else {
 					if(LOG.isDebugEnabled()) {
 						LOG.debug("PolicyRefresher(serviceName=" + serviceName + ").run(): no update found. lastKnownVersion=" + lastKnownVersion);
@@ -196,9 +198,9 @@ public class PolicyRefresher extends Thread {
 			LOG.debug("==> PolicyRefresher(serviceName=" + serviceName + ").loadFromCache()");
 		}
 
-		RangerPolicyEngine policyEngine = this.policyEngine;
+		RangerBasePlugin plugIn = this.plugIn;
 
-		if(policyEngine != null) {
+		if(plugIn != null) {
 	    	File cacheFile = StringUtils.isEmpty(this.cacheFile) ? null : new File(this.cacheFile);
 
 	    	if(cacheFile != null && cacheFile.isFile() && cacheFile.canRead()) {
@@ -212,11 +214,13 @@ public class PolicyRefresher extends Thread {
 			        if(policies != null) {
 			        	if(!StringUtils.equals(serviceName, policies.getServiceName())) {
 			        		LOG.warn("ignoring unexpected serviceName '" + policies.getServiceName() + "' in cache file '" + cacheFile.getAbsolutePath() + "'");
+
+			        		policies.setServiceName(serviceName);
 			        	}
 
 			        	lastKnownVersion = policies.getPolicyVersion() == null ? -1 : policies.getPolicyVersion().longValue();
 
-			        	policyEngine.setPolicies(serviceName, policies.getServiceDef(), policies.getPolicies());
+			        	plugIn.setPolicies(policies);
 			        }
 		        } catch (Exception excp) {
 		        	LOG.error("failed to load policies from cache file " + cacheFile.getAbsolutePath(), excp);

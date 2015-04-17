@@ -752,7 +752,8 @@ update_properties() {
 	chmod a+rx ${WEBAPP_ROOT}/WEB-INF/classes/conf/java_home.sh
 
 
-	to_file=$app_home/WEB-INF/classes/conf/xa_system.properties
+#	to_file=$app_home/WEB-INF/classes/conf/xa_system.properties
+	to_file=$app_home/WEB-INF/classes/conf/ranger-admin-site.xml
 	if test -f $to_file; then
 		log "[I] $to_file file found"
 	else
