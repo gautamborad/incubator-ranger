@@ -44,8 +44,6 @@ public class EmbeddedServer {
 	private static final Logger LOG = Logger.getLogger(EmbeddedServer.class
 			.getName());
 
-	// private static final String DEFAULT_CONFIG_FILENAME =
-	// "ranger_webserver.properties" ;
 	private static final String DEFAULT_CONFIG_FILENAME = "ranger-admin-site.xml";
 
 	private static final String DEFAULT_WEBAPPS_ROOT_FOLDER = "webapps";
@@ -62,38 +60,8 @@ public class EmbeddedServer {
 		if (args.length > 0) {
 			configFile = args[0];
 		}
-		// initConfig() ;
 		loadRangerSiteConfig();
 	}
-
-//	private void initConfig() {
-//
-//		String cfgFile = getResourceFileName(configFile);
-//
-//		serverConfigProperties.clear();
-//
-//		InputStream in = null;
-//		try {
-//
-//			in = new FileInputStream(cfgFile);
-//			serverConfigProperties.load(in);
-//		} catch (FileNotFoundException fnf) {
-//			LOG.severe("Unable to find config  file [" + cfgFile + "]");
-//			fnf.printStackTrace();
-//		} catch (IOException ioe) {
-//			LOG.severe("Unable to load config  file [" + cfgFile + "]");
-//			ioe.printStackTrace();
-//		} finally {
-//			if (in != null) {
-//				try {
-//					in.close();
-//				} catch (IOException ioe) {
-//					// Ignore IOE when the stream is closed.
-//				}
-//			}
-//		}
-//		serverConfigProperties.list(System.out);
-//	}
 
 	public static int DEFAULT_SHUTDOWN_PORT = 6185;
 	public static String DEFAULT_SHUTDOWN_COMMAND = "SHUTDOWN";
@@ -101,15 +69,10 @@ public class EmbeddedServer {
 	public void start() {
 		Tomcat server = new Tomcat();
 
-//		String hostName = getConfig("service.host");
 		String hostName = getConfig("ranger.service.host");
-//		int serverPort = getIntConfig("http.service.port", 6181);
 		int serverPort = getIntConfig("ranger.service.http.port", 6181);
-//		int sslPort = getIntConfig("https.service.port", -1);
 		int sslPort = getIntConfig("ranger.service.https.port", -1);
-//		int shutdownPort = getIntConfig("service.shutdownPort",DEFAULT_SHUTDOWN_PORT);
 		int shutdownPort = getIntConfig("ranger.service.shutdown.port",DEFAULT_SHUTDOWN_PORT);
-//		String shutdownCommand = getConfig("service.shutdownCommand",DEFAULT_SHUTDOWN_COMMAND);
 		String shutdownCommand = getConfig("ranger.service.shutdown.command",DEFAULT_SHUTDOWN_COMMAND);
 
 		server.setHostname(hostName);
@@ -117,7 +80,6 @@ public class EmbeddedServer {
 		server.getServer().setPort(shutdownPort);
 		server.getServer().setShutdown(shutdownCommand);
 
-//		boolean isHttpsEnabled = Boolean.valueOf(getConfig("https.attrib.SSLEnabled", "false"));
 		boolean isHttpsEnabled = Boolean.valueOf(getConfig("ranger.service.https.attrib.ssl.enabled", "false"));
 		boolean ajpEnabled = Boolean.valueOf(getConfig("ajp.enabled", "false"));
 
@@ -139,15 +101,10 @@ public class EmbeddedServer {
 			ssl.setSecure(true);
 			ssl.setScheme("https");
 			ssl.setAttribute("SSLEnabled", "true");
-			//ssl.setAttribute("sslProtocol", getConfig("https.attrib.sslProtocol", "TLS"));
 			ssl.setAttribute("sslProtocol", getConfig("ranger.service.https.attrib.ssl.protocol", "TLS"));
-			//ssl.setAttribute("clientAuth", getConfig("https.attrib.clientAuth", "false"));
 			ssl.setAttribute("clientAuth", getConfig("ranger.service.https.attrib.client.auth", "false"));
-			//ssl.setAttribute("keyAlias", getConfig("https.attrib.keyAlias"));
 			ssl.setAttribute("keyAlias", getConfig("ranger.service.https.attrib.keystore.keyalias"));
-			//ssl.setAttribute("keystorePass", getConfig("https.attrib.keystorePass"));
 			ssl.setAttribute("keystorePass", getConfig("ranger.service.https.attrib.keystore.pass"));
-			//ssl.setAttribute("keystoreFile", getConfig("https.attrib.keystoreFile"));
 			ssl.setAttribute("keystoreFile", getConfig("ranger.service.https.attrib.keystore.file"));
 
 			String enabledProtocols = "SSLv2Hello, TLSv1, TLSv1.1, TLSv1.2";
@@ -174,13 +131,11 @@ public class EmbeddedServer {
 		valve.setAsyncSupported(true);
 		valve.setBuffered(false);
 		valve.setEnabled(true);
-		//valve.setFileDateFormat(getConfig("accesslog.dateformat", "yyyy-MM-dd.HH"));
 		valve.setFileDateFormat(getConfig("ranger.accesslog.dateformat", "yyyy-MM-dd.HH"));
 		valve.setDirectory(logDirectory.getAbsolutePath());
 		valve.setRotatable(true);
 		valve.setSuffix(".log");
 
-		//String logPattern = getConfig("accesslog.pattern", "%h %l %u %t \"%r\" %s %b");
 		String logPattern = getConfig("ranger.accesslog.pattern", "%h %l %u %t \"%r\" %s %b");
 		valve.setPattern(logPattern);
 

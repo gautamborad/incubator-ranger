@@ -63,7 +63,6 @@ public class RangerAuthenticationEntryPoint extends
 		}
 
 		if (ajaxReturnCode < 0) {
-//	    ajaxReturnCode = PropertiesUtil.getIntProperty("xa.ajax.auth.required.code", 401);
 		ajaxReturnCode = PropertiesUtil.getIntProperty("ranger.ajax.auth.required.code", 401);
 		}
 	}
@@ -79,7 +78,6 @@ public class RangerAuthenticationEntryPoint extends
 		}
 
 		String requestURL = (request.getRequestURL() != null) ? request.getRequestURL().toString() : "";
-//		String servletPath = PropertiesUtil.getProperty("xa.servlet.mapping.url.pattern", "service");
 		String servletPath = PropertiesUtil.getProperty("ranger.servlet.mapping.url.pattern", "service");
 		String reqServletPath = configUtil.getWebAppRootURL() + "/" + servletPath;
 

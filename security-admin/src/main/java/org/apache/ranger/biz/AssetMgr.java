@@ -1168,7 +1168,6 @@ public class AssetMgr extends AssetMgrBase {
 			HashMap<String, String> configMap = (HashMap<String, String>) jsonUtil
 					.jsonToMap(newConfig);
 			String password = configMap.get("password");
-//			String hiddenPasswordString = PropertiesUtil.getProperty("xa.password.hidden", "*****");
 			String hiddenPasswordString = PropertiesUtil.getProperty("ranger.password.hidden", "*****");
 			if (password != null && !password.equals(hiddenPasswordString)) {
 				String defaultConfig = vXAsset.getConfig();
@@ -1690,7 +1689,6 @@ public class AssetMgr extends AssetMgrBase {
 				.execute(new TransactionCallback<Object>() {
 					public Object doInTransaction(TransactionStatus status) {
 						if (xXPolicyExportAudit.getHttpRetCode() == HttpServletResponse.SC_NOT_MODIFIED) {
-//							boolean logNotModified = PropertiesUtil.getBooleanProperty("xa.log.SC_NOT_MODIFIED", false);
 							boolean logNotModified = PropertiesUtil.getBooleanProperty("ranger.log.SC_NOT_MODIFIED", false);
 							if (!logNotModified) {
 								logger.debug("Not logging HttpServletResponse."

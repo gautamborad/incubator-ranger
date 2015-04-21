@@ -94,21 +94,15 @@ public class RangerBizUtil {
 
 	String auditDBType = AUDIT_STORE_RDBMS;
 
-//	static String fileSeparator = PropertiesUtil.getProperty("xa.file.separator", "/");
 	static String fileSeparator = PropertiesUtil.getProperty("ranger.file.separator", "/");
 
 	public RangerBizUtil() {
-//		maxFirstNameLength = Integer.parseInt(PropertiesUtil.getProperty("xa.user.firstname.maxlength", "16"));
-//		maxDisplayNameLength = PropertiesUtil.getIntProperty("xa.bookmark.name.maxlen", maxDisplayNameLength);
 		maxFirstNameLength = Integer.parseInt(PropertiesUtil.getProperty("ranger.user.firstname.maxlength", "16"));
 		maxDisplayNameLength = PropertiesUtil.getIntProperty("ranger.bookmark.name.maxlen", maxDisplayNameLength);
 
 		groupEditableClasses = new HashSet<Class<?>>(
 				Arrays.asList(groupEditableClassesList));
-//		enableResourceAccessControl = PropertiesUtil.getBooleanProperty("xa.resource.accessControl.enabled", true);
 		enableResourceAccessControl = PropertiesUtil.getBooleanProperty("ranger.resource.accessControl.enabled", true);
-//		auditDBType = PropertiesUtil.getProperty("xa.audit.store",
-//				auditDBType).toLowerCase();
 		
 		auditDBType = PropertiesUtil.getProperty("ranger.audit.source.type",
 		auditDBType).toLowerCase();
@@ -1340,7 +1334,6 @@ public class RangerBizUtil {
 
 		dbFlavor = PropertiesUtil.getProperty("xa.db.flavor");
 		if (dbFlavor == null || dbFlavor.trim().isEmpty()) {
-//			dbFlavor = PropertiesUtil.getProperty("jdbc.dialect");
 			dbFlavor = PropertiesUtil.getProperty("ranger.jpa.jdbc.dialect");
 			dbFlavorPropFound = false;
 		}

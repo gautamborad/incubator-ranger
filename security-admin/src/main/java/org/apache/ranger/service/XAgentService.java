@@ -47,7 +47,6 @@ public class XAgentService {
 	protected boolean auditSupported = false;
 	
 	public XAgentService() {
-//		defaultDBDateFormat = PropertiesUtil.getProperty("xa.db.defaultDateformat", defaultDBDateFormat);
 		defaultDBDateFormat = PropertiesUtil.getProperty("ranger.db.defaultDateformat", defaultDBDateFormat);
 		auditSupported = PropertiesUtil.getBooleanProperty("xa.audit.supported", 
 				false);

@@ -67,7 +67,6 @@ public class PropertiesUtil extends PropertyPlaceholderConfigurer {
 	}
 
 	//update credential from keystore
-//	if(propertiesMap!=null && propertiesMap.containsKey("xaDB.jdbc.credential.provider.path") && propertiesMap.containsKey("xaDB.jdbc.credential.alias")){
 	if(propertiesMap!=null && propertiesMap.containsKey("ranger.jpa.jdbc.credential.provider.path") && propertiesMap.containsKey("ranger.jpa.jdbc.credential.alias")){
 		String path=propertiesMap.get("ranger.jpa.jdbc.credential.provider.path");
 		String alias=propertiesMap.get("ranger.jpa.jdbc.credential.alias");
@@ -75,7 +74,6 @@ public class PropertiesUtil extends PropertyPlaceholderConfigurer {
 			String xaDBPassword=CredentialReader.getDecryptedString(path.trim(),alias.trim());
 			if(xaDBPassword!=null&& !xaDBPassword.trim().isEmpty() &&
 					!xaDBPassword.trim().equalsIgnoreCase("none")){
-//				propertiesMap.put("jdbc.password", xaDBPassword);
 				propertiesMap.put("ranger.jpa.jdbc.password", xaDBPassword);
 				props.put("ranger.jpa.jdbc.password", xaDBPassword);
 			}else{
@@ -90,8 +88,6 @@ public class PropertiesUtil extends PropertyPlaceholderConfigurer {
 			String auditDBPassword=CredentialReader.getDecryptedString(path.trim(), alias.trim());
 			if(auditDBPassword!=null&& !auditDBPassword.trim().isEmpty() &&
 					!auditDBPassword.trim().equalsIgnoreCase("none")){
-//				propertiesMap.put("auditDB.jdbc.password", auditDBPassword);
-//				props.put("auditDB.jdbc.password", auditDBPassword);
 				propertiesMap.put("ranger.jpa.auditDB.jdbc.password", auditDBPassword);
 				props.put("ranger.jpa.auditDB.jdbc.password", auditDBPassword);
 			}else{
