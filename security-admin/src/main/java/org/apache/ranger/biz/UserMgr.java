@@ -1164,7 +1164,7 @@ public class UserMgr {
 		for (XXPortalUserRole gjUserRole : gjUserRoleList) {
 			userProfile.getUserRoleList().add(gjUserRole.getUserRole());
 		}
-
+		
 		return userProfile;
 	}
 

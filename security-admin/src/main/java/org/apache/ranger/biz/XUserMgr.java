@@ -333,7 +333,8 @@ public class XUserMgr extends XUserMgrBase {
 //		String hiddenPasswordString = PropertiesUtil.getProperty("xa.password.hidden", "*****");
 		String hiddenPasswordString = PropertiesUtil.getProperty("ranger.password.hidden", "*****");
 		String password = vXUser.getPassword();
-		if (oldUserProfile != null && password != null && password.equals(hiddenPasswordString)) {
+		if (oldUserProfile != null && password != null
+				&& password.equals(hiddenPasswordString)) {
 			vXPortalUser.setPassword(oldUserProfile.getPassword());
 		}
 		vXPortalUser.setPassword(password);
