@@ -20,7 +20,6 @@
 package org.apache.ranger.plugin.policyevaluator;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.ranger.plugin.model.RangerPolicy;
@@ -28,7 +27,6 @@ import org.apache.ranger.plugin.model.RangerServiceDef;
 import org.apache.ranger.plugin.policyengine.RangerAccessRequest;
 import org.apache.ranger.plugin.policyengine.RangerAccessResult;
 import org.apache.ranger.plugin.policyengine.RangerPolicyEngine;
-import org.apache.ranger.plugin.policyengine.RangerPolicyEngineOptions;
 
 import java.util.*;
 import java.lang.Math;
@@ -58,12 +56,12 @@ public class RangerOptimizedPolicyEvaluator extends RangerDefaultPolicyEvaluator
     private static final int RANGER_POLICY_EVAL_RESERVED_SLOTS_PER_LEVEL_NUMBER               = 1000;
 
     @Override
-    public void init(RangerPolicy policy, RangerServiceDef serviceDef, RangerPolicyEngineOptions options) {
+    public void init(RangerPolicy policy, RangerServiceDef serviceDef) {
         if(LOG.isDebugEnabled()) {
             LOG.debug("==> RangerOptimizedPolicyEvaluator.init()");
         }
 
-        super.init(policy, serviceDef, options);
+        super.init(policy, serviceDef);
 
         accessPerms = new HashSet<String>();
         groups = new HashSet<String>();
@@ -92,17 +90,15 @@ public class RangerOptimizedPolicyEvaluator extends RangerDefaultPolicyEvaluator
                 hasPublicGroup = true;
             }
         }
-
-        setEvalOrder(computeEvalOrder());
-
         if(LOG.isDebugEnabled()) {
             LOG.debug("<== RangerOptimizedPolicyEvaluator.init()");
         }
     }
 
-    public int computeEvalOrder() {
+    @Override
+    public int computePolicyEvalOrder() {
         if(LOG.isDebugEnabled()) {
-            LOG.debug("==> RangerOptimizedPolicyEvaluator.computeEvalOrder()");
+            LOG.debug("==> RangerOptimizedPolicyEvaluator.computePolicyEvalOrder()");
         }
         RangerServiceDef serviceDef = getServiceDef();
         RangerPolicy policy = getPolicy();
@@ -197,41 +193,13 @@ public class RangerOptimizedPolicyEvaluator extends RangerDefaultPolicyEvaluator
         priorityLevel -= Math.round(((float)RANGER_POLICY_EVAL_ALL_ACCESS_TYPES_PREMIUM * accessPerms.size()) / serviceDef.getAccessTypes().size());
 
         if(LOG.isDebugEnabled()) {
-            LOG.debug("<== RangerOptimizedPolicyEvaluator.computeEvalOrder(), policyName:" + policy.getName() + ", priority:" + priorityLevel);
+            LOG.debug("<== RangerOptimizedPolicyEvaluator.computePolicyEvalOrder(), policyName:" + policy.getName() + ", priority:" + priorityLevel);
         }
         return priorityLevel;
     }
 
 	@Override
-	protected boolean isAccessAllowed(String user, Set<String> userGroups, String accessType) {
-		if(LOG.isDebugEnabled()) {
-			LOG.debug("==> RangerOptimizedPolicyEvaluator.isAccessAllowed(" + user + ", " + userGroups + ", " + accessType + ")");
-		}
-
-		boolean ret = false;
-
-		if (hasPublicGroup || users.contains(user) || CollectionUtils.containsAny(groups, userGroups)) {
-			if (StringUtils.isEmpty(accessType)) {
-				accessType = RangerPolicyEngine.ANY_ACCESS;
-			}
-
-			boolean isAnyAccess   = StringUtils.equals(accessType, RangerPolicyEngine.ANY_ACCESS);
-			boolean isAdminAccess = StringUtils.equals(accessType, RangerPolicyEngine.ADMIN_ACCESS);
-
-            if (isAnyAccess || (isAdminAccess && delegateAdmin) || hasAllPerms || accessPerms.contains(accessType)) {
-                ret = super.isAccessAllowed(user, userGroups, accessType);
-            }
-        }
-
-        if(LOG.isDebugEnabled()) {
-            LOG.debug("<== RangerOptimizedPolicyEvaluator.isAccessAllowed(" + user + ", " + userGroups + ", " + accessType + "): " + ret);
-        }
-
-		return ret;
-	}
-
-	@Override
-    protected void evaluatePolicyItemsForAccess(RangerPolicy policy, RangerAccessRequest request, RangerAccessResult result) {
+    protected void evaluatePolicyItemsForAccess(RangerAccessRequest request, RangerAccessResult result) {
         if(LOG.isDebugEnabled()) {
             LOG.debug("==> RangerOptimizedPolicyEvaluator.evaluatePolicyItemsForAccess()");
         }
@@ -241,7 +209,7 @@ public class RangerOptimizedPolicyEvaluator extends RangerDefaultPolicyEvaluator
 
             if (request.isAccessTypeAny() || (request.isAccessTypeDelegatedAdmin() && delegateAdmin) || hasAllPerms || accessPerms.contains(request.getAccessType())) {
                 // No need to reject based on aggregated access permissions
-                super.evaluatePolicyItemsForAccess(policy, request, result);
+                super.evaluatePolicyItemsForAccess(request, result);
             }
         }
         if(LOG.isDebugEnabled()) {

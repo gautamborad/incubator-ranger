@@ -43,12 +43,13 @@ import com.google.gson.JsonParseException;
 
 
 public class TestPolicyEngine {
-	static RangerPolicyEngine policyEngine = null;
-	static Gson               gsonBuilder  = null;
+	static RangerPolicyEngineImpl policyEngine = null;
+	static Gson                   gsonBuilder  = null;
 
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		policyEngine = new RangerPolicyEngineImpl();
 		gsonBuilder = new GsonBuilder().setDateFormat("yyyyMMdd-HH:mm:ss.SSS-Z")
 									   .setPrettyPrinting()
 									   .registerTypeAdapter(RangerAccessRequest.class, new RangerAccessRequestDeserializer())
@@ -100,7 +101,7 @@ public class TestPolicyEngine {
 		servicePolicies.setServiceDef(testCase.serviceDef);
 		servicePolicies.setPolicies(testCase.policies);
 
-		policyEngine = new RangerPolicyEngineImpl(servicePolicies);
+		policyEngine.setPolicies(servicePolicies);
 
 		for(TestData test : testCase.tests) {
 			RangerAccessResult expected = test.result;

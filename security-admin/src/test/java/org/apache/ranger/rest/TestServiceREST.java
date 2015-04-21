@@ -352,8 +352,7 @@ public class TestServiceREST {
 
 		Mockito.when(validatorFactory.getServiceDefValidator(svcStore))
 				.thenReturn(serviceDefValidator);
-		HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-		serviceREST.deleteServiceDef(rangerServiceDef.getId(), request);
+		serviceREST.deleteServiceDef(rangerServiceDef.getId());
 		Mockito.verify(validatorFactory).getServiceDefValidator(svcStore);
 	}
 
@@ -488,8 +487,7 @@ public class TestServiceREST {
 
 		Mockito.when(validatorFactory.getServiceDefValidator(svcStore))
 				.thenReturn(serviceDefValidator);
-		HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-		serviceREST.deleteServiceDef(rangerServiceDef.getId(), request);
+		serviceREST.deleteServiceDef(rangerServiceDef.getId());
 		Mockito.verify(validatorFactory).getServiceDefValidator(svcStore);
 		Mockito.when(svcStore.getService(rangerService.getId())).thenReturn(
 				rangerService);
@@ -524,8 +522,7 @@ public class TestServiceREST {
 
 		Mockito.when(validatorFactory.getServiceDefValidator(svcStore))
 				.thenReturn(serviceDefValidator);
-		HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-		serviceREST.deleteServiceDef(rangerServiceDef.getId(), request);
+		serviceREST.deleteServiceDef(rangerServiceDef.getId());
 		Mockito.verify(validatorFactory).getServiceDefValidator(svcStore);
 		Mockito.verify(serviceMgr).validateConfig(rangerService, svcStore);
 	}

@@ -21,7 +21,6 @@ package org.apache.ranger.plugin.resourcematcher;
 
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOCase;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,14 +40,12 @@ public class RangerDefaultResourceMatcher extends RangerAbstractResourceMatcher 
 		if(resource == null || isMatchAny) {
 			ret = isMatchAny;
 		} else {
+			if(optIgnoreCase) {
+				resource = resource.toLowerCase();
+			}
+
 			for(String policyValue : policyValues) {
-				if(optWildCard) {
-					ret = optIgnoreCase ? FilenameUtils.wildcardMatch(resource, policyValue, IOCase.INSENSITIVE)
-										: FilenameUtils.wildcardMatch(resource, policyValue, IOCase.SENSITIVE);
-				} else {
-					ret = optIgnoreCase ? StringUtils.equalsIgnoreCase(resource, policyValue)
-										: StringUtils.equals(resource, policyValue);
-				}
+				ret = optWildCard ? FilenameUtils.wildcardMatch(resource, policyValue) : StringUtils.equals(resource, policyValue);
 
 				if(ret) {
 					break;

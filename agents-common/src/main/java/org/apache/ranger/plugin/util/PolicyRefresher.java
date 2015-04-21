@@ -29,7 +29,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.ranger.admin.client.RangerAdminClient;
-import org.apache.ranger.plugin.service.RangerBasePlugin;
+import org.apache.ranger.plugin.policyengine.RangerPolicyEngine;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -38,24 +38,24 @@ import com.google.gson.GsonBuilder;
 public class PolicyRefresher extends Thread {
 	private static final Log LOG = LogFactory.getLog(PolicyRefresher.class);
 
-	private final RangerBasePlugin  plugIn;
-	private final String            serviceType;
-	private final String            serviceName;
-	private final RangerAdminClient rangerAdmin;
-	private final String            cacheFile;
-	private final Gson              gson;
+	private RangerPolicyEngine policyEngine      = null;
+	private String             serviceType       = null;
+	private String             serviceName       = null;
+	private RangerAdminClient  rangerAdmin       = null;
+	private long               pollingIntervalMs = 30 * 1000;
+	private String             cacheFile         = null;
 
-	private long pollingIntervalMs = 30 * 1000;
-	private long lastKnownVersion  = -1;
+	private long    lastKnownVersion = -1;
+	private Gson    gson             = null;
 
 
 
-	public PolicyRefresher(RangerBasePlugin plugIn, String serviceType, String appId, String serviceName, RangerAdminClient rangerAdmin, long pollingIntervalMs, String cacheDir) {
+	public PolicyRefresher(RangerPolicyEngine policyEngine, String serviceType, String appId, String serviceName, RangerAdminClient rangerAdmin, long pollingIntervalMs, String cacheDir) {
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("==> PolicyRefresher(serviceName=" + serviceName + ").PolicyRefresher()");
 		}
 
-		this.plugIn            = plugIn;
+		this.policyEngine      = policyEngine;
 		this.serviceType       = serviceType;
 		this.serviceName       = serviceName;
 		this.rangerAdmin       = rangerAdmin;
@@ -71,13 +71,11 @@ public class PolicyRefresher extends Thread {
 
 		this.cacheFile = cacheDir == null ? null : (cacheDir + File.separator + cacheFilename);
 
-		Gson gson = null;
-		try {
-			gson = new GsonBuilder().setDateFormat("yyyyMMdd-HH:mm:ss.SSS-Z").setPrettyPrinting().create();
+        try {
+        	this.gson = new GsonBuilder().setDateFormat("yyyyMMdd-HH:mm:ss.SSS-Z").setPrettyPrinting().create();
 		} catch(Throwable excp) {
 			LOG.fatal("PolicyRefresher(): failed to create GsonBuilder object", excp);
 		}
-		this.gson = gson;
 
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("<== PolicyRefresher(serviceName=" + serviceName + ").PolicyRefresher()");
@@ -85,10 +83,10 @@ public class PolicyRefresher extends Thread {
 	}
 
 	/**
-	 * @return the plugIn
+	 * @return the policyEngine
 	 */
-	public RangerBasePlugin getPlugin() {
-		return plugIn;
+	public RangerPolicyEngine getPolicyEngine() {
+		return policyEngine;
 	}
 
 	/**
@@ -169,7 +167,7 @@ public class PolicyRefresher extends Thread {
 
 		        	lastKnownVersion = newVersion;
 
-					plugIn.setPolicies(svcPolicies);
+					policyEngine.setPolicies(svcPolicies);
 				} else {
 					if(LOG.isDebugEnabled()) {
 						LOG.debug("PolicyRefresher(serviceName=" + serviceName + ").run(): no update found. lastKnownVersion=" + lastKnownVersion);
@@ -198,9 +196,9 @@ public class PolicyRefresher extends Thread {
 			LOG.debug("==> PolicyRefresher(serviceName=" + serviceName + ").loadFromCache()");
 		}
 
-		RangerBasePlugin plugIn = this.plugIn;
+		RangerPolicyEngine policyEngine = this.policyEngine;
 
-		if(plugIn != null) {
+		if(policyEngine != null) {
 	    	File cacheFile = StringUtils.isEmpty(this.cacheFile) ? null : new File(this.cacheFile);
 
 	    	if(cacheFile != null && cacheFile.isFile() && cacheFile.canRead()) {
@@ -220,7 +218,7 @@ public class PolicyRefresher extends Thread {
 
 			        	lastKnownVersion = policies.getPolicyVersion() == null ? -1 : policies.getPolicyVersion().longValue();
 
-			        	plugIn.setPolicies(policies);
+			        	policyEngine.setPolicies(policies);
 			        }
 		        } catch (Exception excp) {
 		        	LOG.error("failed to load policies from cache file " + cacheFile.getAbsolutePath(), excp);

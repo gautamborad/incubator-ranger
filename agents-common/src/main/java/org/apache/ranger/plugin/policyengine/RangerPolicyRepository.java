@@ -27,11 +27,7 @@ import org.apache.ranger.authorization.hadoop.config.RangerConfiguration;
 import org.apache.ranger.plugin.contextenricher.RangerContextEnricher;
 import org.apache.ranger.plugin.model.RangerPolicy;
 import org.apache.ranger.plugin.model.RangerServiceDef;
-import org.apache.ranger.plugin.policyevaluator.RangerCachedPolicyEvaluator;
-import org.apache.ranger.plugin.policyevaluator.RangerDefaultPolicyEvaluator;
-import org.apache.ranger.plugin.policyevaluator.RangerOptimizedPolicyEvaluator;
 import org.apache.ranger.plugin.policyevaluator.RangerPolicyEvaluator;
-import org.apache.ranger.plugin.util.ServicePolicies;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,26 +37,42 @@ import java.util.Map;
 public class RangerPolicyRepository {
     private static final Log LOG = LogFactory.getLog(RangerPolicyRepository.class);
 
-    private final String                      serviceName;
-    private final RangerServiceDef            serviceDef;
-    private final List<RangerPolicy>          policies;
-    private final long                        policyVersion;
-    private final List<RangerContextEnricher> contextEnrichers;
-    private final List<RangerPolicyEvaluator> policyEvaluators;
-    private final Map<String, Boolean>        accessAuditCache;
+    private String serviceName                               = null;
+    private List<RangerPolicyEvaluatorFacade> policyEvaluators  = null;
+    private List<RangerContextEnricher> contextEnrichers        = null;
+    private RangerServiceDef serviceDef                         = null;
+    // Not used at this time
+    private Map<String, Boolean> accessAuditCache     = null;
 
     private static int RANGER_POLICYENGINE_AUDITRESULT_CACHE_SIZE = 64*1024;
 
-    RangerPolicyRepository(ServicePolicies servicePolicies, RangerPolicyEngineOptions options) {
+    RangerPolicyRepository(String serviceName) {
         super();
+        this.serviceName = serviceName;
+    }
+    String getServiceName() {
+        return serviceName;
+    }
+    List<RangerPolicyEvaluatorFacade> getPolicyEvaluators() {
+        return policyEvaluators;
+    }
+    List<RangerContextEnricher> getContextEnrichers() {
+        return contextEnrichers;
+    }
+    RangerServiceDef getServiceDef() {
+        return serviceDef;
+    }
 
-        serviceName   = servicePolicies.getServiceName();
-        serviceDef    = servicePolicies.getServiceDef();
-        policies      = Collections.unmodifiableList(servicePolicies.getPolicies());
-        policyVersion = servicePolicies.getPolicyVersion() != null ? servicePolicies.getPolicyVersion().longValue() : -1;
+    void init(RangerServiceDef serviceDef, List<RangerPolicy> policies) {
+        if(LOG.isDebugEnabled()) {
+            LOG.debug("==> RangerPolicyRepository.init(" + serviceDef + ", policies.count=" + policies.size() + ")");
+        }
 
-        List<RangerContextEnricher> contextEnrichers = new ArrayList<RangerContextEnricher>();
-        if (!options.disableContextEnrichers && !CollectionUtils.isEmpty(serviceDef.getContextEnrichers())) {
+        this.serviceDef = serviceDef;
+
+        contextEnrichers = new ArrayList<RangerContextEnricher>();
+
+        if (!CollectionUtils.isEmpty(serviceDef.getContextEnrichers())) {
             for (RangerServiceDef.RangerContextEnricherDef enricherDef : serviceDef.getContextEnrichers()) {
                 if (enricherDef == null) {
                     continue;
@@ -68,61 +80,34 @@ public class RangerPolicyRepository {
 
                 RangerContextEnricher contextEnricher = buildContextEnricher(enricherDef);
 
-                if(contextEnricher != null) {
-	                contextEnrichers.add(contextEnricher);
-                }
+                contextEnrichers.add(contextEnricher);
             }
         }
-        this.contextEnrichers = Collections.unmodifiableList(contextEnrichers);
 
-        List<RangerPolicyEvaluator> policyEvaluators = new ArrayList<RangerPolicyEvaluator>();
-        for (RangerPolicy policy : servicePolicies.getPolicies()) {
+        policyEvaluators = new ArrayList<RangerPolicyEvaluatorFacade>();
+
+        for (RangerPolicy policy : policies) {
             if (!policy.getIsEnabled()) {
                 continue;
             }
 
-            RangerPolicyEvaluator evaluator = buildPolicyEvaluator(policy, serviceDef, options);
+            RangerPolicyEvaluatorFacade evaluator = buildPolicyEvaluator(policy, serviceDef);
 
             if (evaluator != null) {
                 policyEvaluators.add(evaluator);
             }
         }
         Collections.sort(policyEvaluators);
-        this.policyEvaluators = Collections.unmodifiableList(policyEvaluators);
 
         String propertyName = "ranger.plugin." + serviceName + ".policyengine.auditcachesize";
 
-        if(options.cacheAuditResults) {
-	        int auditResultCacheSize = RangerConfiguration.getInstance().getInt(propertyName, RANGER_POLICYENGINE_AUDITRESULT_CACHE_SIZE);
+        int auditResultCacheSize = RangerConfiguration.getInstance().getInt(propertyName, RANGER_POLICYENGINE_AUDITRESULT_CACHE_SIZE);
 
-	        accessAuditCache = Collections.synchronizedMap(new CacheMap<String, Boolean>(auditResultCacheSize));
-        } else {
-        	accessAuditCache = null;
+        accessAuditCache = new CacheMap<String, Boolean>(auditResultCacheSize);
+
+        if(LOG.isDebugEnabled()) {
+            LOG.debug("<== RangerPolicyRepository.init(" + serviceDef + ", policies.count=" + policies.size() + ")");
         }
-    }
-
-    public String getServiceName() {
-        return serviceName;
-    }
-
-    public RangerServiceDef getServiceDef() {
-        return serviceDef;
-    }
-
-    public List<RangerPolicy> getPolicies() {
-        return policies;
-    }
-
-    public long getPolicyVersion() {
-        return policyVersion;
-    }
-
-    public List<RangerContextEnricher> getContextEnrichers() {
-        return contextEnrichers;
-    }
-
-    public List<RangerPolicyEvaluator> getPolicyEvaluators() {
-        return policyEvaluators;
     }
 
     private RangerContextEnricher buildContextEnricher(RangerServiceDef.RangerContextEnricherDef enricherDef) {
@@ -156,29 +141,19 @@ public class RangerPolicyRepository {
         return ret;
     }
 
-    private RangerPolicyEvaluator buildPolicyEvaluator(RangerPolicy policy, RangerServiceDef serviceDef, RangerPolicyEngineOptions options) {
+    private RangerPolicyEvaluatorFacade buildPolicyEvaluator(RangerPolicy policy, RangerServiceDef serviceDef) {
         if(LOG.isDebugEnabled()) {
-            LOG.debug("==> RangerPolicyRepository.buildPolicyEvaluator(" + policy + "," + serviceDef + ", " + options + ")");
+            LOG.debug("==> RangerPolicyRepository.buildPolicyEvaluator(" + policy + "," + serviceDef + ")");
         }
 
-        RangerPolicyEvaluator ret = null;
+        RangerPolicyEvaluatorFacade ret = null;
 
-        if(StringUtils.equalsIgnoreCase(options.evaluatorType, RangerPolicyEvaluator.EVALUATOR_TYPE_DEFAULT)) {
-            ret = new RangerDefaultPolicyEvaluator();
-        } else if(StringUtils.equalsIgnoreCase(options.evaluatorType, RangerPolicyEvaluator.EVALUATOR_TYPE_OPTIMIZED)) {
-            ret = new RangerOptimizedPolicyEvaluator();
-        } else if(StringUtils.equalsIgnoreCase(options.evaluatorType, RangerPolicyEvaluator.EVALUATOR_TYPE_CACHED)) {
-            ret = new RangerCachedPolicyEvaluator();
-        } else {
-            ret = new RangerDefaultPolicyEvaluator();
-        }
-
-        ret.init(policy, serviceDef, options);
+        ret = new RangerPolicyEvaluatorFacade();
+        ret.init(policy, serviceDef);
 
         if(LOG.isDebugEnabled()) {
             LOG.debug("<== RangerPolicyRepository.buildPolicyEvaluator(" + policy + "," + serviceDef + "): " + ret);
         }
-
         return ret;
     }
 
@@ -189,7 +164,7 @@ public class RangerPolicyRepository {
 
         Boolean value = null;
 
-        if (accessAuditCache != null) {
+        synchronized (accessAuditCache) {
 	        value = accessAuditCache.get(request.getResource().getAsString(getServiceDef()));
         }
 
@@ -214,7 +189,7 @@ public class RangerPolicyRepository {
 
             Boolean value = ret.getIsAudited() ? Boolean.TRUE : Boolean.FALSE;
 
-            if (accessAuditCache != null) {
+            synchronized(accessAuditCache) {
 	            accessAuditCache.put(strResource, value);
 	        }
         }

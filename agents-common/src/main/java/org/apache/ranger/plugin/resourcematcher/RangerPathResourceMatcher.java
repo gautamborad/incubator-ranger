@@ -20,17 +20,13 @@
 package org.apache.ranger.plugin.resourcematcher;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOCase;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.ranger.plugin.model.RangerPolicy.RangerPolicyResource;
+import org.apache.ranger.plugin.model.RangerServiceDef.RangerResourceDef;
 
 
 public class RangerPathResourceMatcher extends RangerAbstractResourceMatcher {
@@ -39,37 +35,22 @@ public class RangerPathResourceMatcher extends RangerAbstractResourceMatcher {
 	public static final String OPTION_PATH_SEPERATOR       = "pathSeparatorChar";
 	public static final char   DEFAULT_PATH_SEPERATOR_CHAR = org.apache.hadoop.fs.Path.SEPARATOR_CHAR;
 
-	private boolean      policyIsRecursive    = false;
-	private char         pathSeparatorChar    = DEFAULT_PATH_SEPERATOR_CHAR;
-	private List<String> policyValuesForMatch = null;
+	private boolean policyIsRecursive = false;
+	private char    pathSeparatorChar = DEFAULT_PATH_SEPERATOR_CHAR;
 
 	@Override
-	public void init(Map<String, String> options, RangerPolicyResource policyResource) {
+	public void init(RangerResourceDef resourceDef, RangerPolicyResource policyResource) {
 		if(LOG.isDebugEnabled()) {
-			LOG.debug("==> RangerPathResourceMatcher.init(" + options + ", " + policyResource + ")");
+			LOG.debug("==> RangerPathResourceMatcher.init(" + resourceDef + ", " + policyResource + ")");
 		}
-
-		super.init(options, policyResource);
 
 		policyIsRecursive = policyResource == null ? false : policyResource.getIsRecursive();
 		pathSeparatorChar = getCharOption(OPTION_PATH_SEPERATOR, DEFAULT_PATH_SEPERATOR_CHAR);
 
-		if(policyIsRecursive && optWildCard && !isMatchAny) {
-			policyValuesForMatch = new ArrayList<String>();
-
-			for(String policyValue : policyValues) {
-				if(policyValue.charAt(policyValue.length() - 1) == pathSeparatorChar) {
-					policyValuesForMatch.add(policyValue + WILDCARD_ASTERISK);
-				} else {
-					policyValuesForMatch.add(policyValue);
-				}
-			}
-		} else {
-			policyValuesForMatch = policyValues;
-		}
+		super.init(resourceDef, policyResource);
 
 		if(LOG.isDebugEnabled()) {
-			LOG.debug("<== RangerPathResourceMatcher.init(" + options + ", " + policyResource + ")");
+			LOG.debug("<== RangerPathResourceMatcher.init(" + resourceDef + ", " + policyResource + ")");
 		}
 	}
 
@@ -84,19 +65,23 @@ public class RangerPathResourceMatcher extends RangerAbstractResourceMatcher {
 		if(resource == null || isMatchAny) {
 			ret = isMatchAny;
 		} else {
-			IOCase caseSensitivity = optIgnoreCase ? IOCase.INSENSITIVE : IOCase.SENSITIVE;
+			if(optIgnoreCase) {
+				resource = resource.toLowerCase();
+			}
 
-			for(String policyValue : policyValuesForMatch) {
-				if(policyIsRecursive && optWildCard) {
-					ret = isRecursiveWildCardMatch(resource, policyValue, pathSeparatorChar, caseSensitivity);
-				} else if(policyIsRecursive) {
-					ret = optIgnoreCase ? StringUtils.startsWithIgnoreCase(resource, policyValue)
-										: StringUtils.startsWith(resource, policyValue);
-				} else if(optWildCard) {
-					ret = FilenameUtils.wildcardMatch(resource, policyValue, caseSensitivity);
+			for(String policyValue : policyValues) {
+				if(policyIsRecursive) {
+					if(optWildCard) {
+						ret = isRecursiveWildCardMatch(resource, policyValue, pathSeparatorChar) ;
+					} else {
+						ret = StringUtils.startsWith(resource, policyValue);
+					}
 				} else {
-					ret = optIgnoreCase ? StringUtils.equalsIgnoreCase(resource, policyValue)
-										: StringUtils.equals(resource, policyValue);
+					if(optWildCard) {
+						ret = FilenameUtils.wildcardMatch(resource, policyValue);
+					} else {
+						ret = StringUtils.equals(resource, policyValue);
+					}
 				}
 
 				if(ret) {
@@ -116,7 +101,7 @@ public class RangerPathResourceMatcher extends RangerAbstractResourceMatcher {
 		return ret;
 	}
 
-	private boolean isRecursiveWildCardMatch(String pathToCheck, String wildcardPath, char pathSeparatorChar, IOCase caseSensitivity) {
+	private boolean isRecursiveWildCardMatch(String pathToCheck, String wildcardPath, char pathSeparatorChar) {
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("==> RangerPathResourceMatcher.isRecursiveWildCardMatch(" + pathToCheck + ", " + wildcardPath + ", " + pathSeparatorChar + ")");
 		}
@@ -136,7 +121,7 @@ public class RangerPathResourceMatcher extends RangerAbstractResourceMatcher {
 				for(String p : pathElements) {
 					sb.append(p);
 
-					ret = FilenameUtils.wildcardMatch(sb.toString(), wildcardPath, caseSensitivity) ;
+					ret = FilenameUtils.wildcardMatch(sb.toString(), wildcardPath) ;
 
 					if (ret) {
 						break;
@@ -147,7 +132,7 @@ public class RangerPathResourceMatcher extends RangerAbstractResourceMatcher {
 
 				sb = null;
 			} else { // pathToCheck consists of only pathSeparatorChar
-				ret = FilenameUtils.wildcardMatch(pathToCheck, wildcardPath, caseSensitivity) ;
+				ret = FilenameUtils.wildcardMatch(pathToCheck, wildcardPath) ;
 			}
 		}
 
