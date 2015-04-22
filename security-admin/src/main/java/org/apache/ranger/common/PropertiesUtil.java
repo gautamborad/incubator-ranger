@@ -81,15 +81,15 @@ public class PropertiesUtil extends PropertyPlaceholderConfigurer {
 			}
 		}
 	}
-	if(propertiesMap!=null && propertiesMap.containsKey("ranger.jpa.auditDB.jdbc.credential.provider.path") && propertiesMap.containsKey("ranger.jpa.auditDB.jdbc.credential.alias")){
-		String path=propertiesMap.get("ranger.jpa.auditDB.jdbc.credential.provider.path");
-		String alias=propertiesMap.get("ranger.jpa.auditDB.jdbc.credential.alias");
+	if(propertiesMap!=null && propertiesMap.containsKey("ranger.jpa.audit.jdbc.credential.provider.path") && propertiesMap.containsKey("ranger.jpa.audit.jdbc.credential.alias")){
+		String path=propertiesMap.get("ranger.jpa.audit.jdbc.credential.provider.path");
+		String alias=propertiesMap.get("ranger.jpa.audit.jdbc.credential.alias");
 		if(path!=null && alias!=null){
 			String auditDBPassword=CredentialReader.getDecryptedString(path.trim(), alias.trim());
 			if(auditDBPassword!=null&& !auditDBPassword.trim().isEmpty() &&
 					!auditDBPassword.trim().equalsIgnoreCase("none")){
-				propertiesMap.put("ranger.jpa.auditDB.jdbc.password", auditDBPassword);
-				props.put("ranger.jpa.auditDB.jdbc.password", auditDBPassword);
+				propertiesMap.put("ranger.jpa.audit.jdbc.password", auditDBPassword);
+				props.put("ranger.jpa.audit.jdbc.password", auditDBPassword);
 			}else{
 				logger.info("Credential keystore password not applied for Audit DB; clear text password shall be applicable");
 			}

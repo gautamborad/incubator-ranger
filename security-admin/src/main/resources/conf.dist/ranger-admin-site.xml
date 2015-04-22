@@ -143,37 +143,37 @@
 	</property>
 <!-- # DB Info for audit_DB -->
 	<property>
-		<name>ranger.jpa.auditDB.jdbc.dialect</name>
+		<name>ranger.jpa.audit.jdbc.dialect</name>
 		<value>org.eclipse.persistence.platform.database.MySQLPlatform</value>
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.jpa.auditDB.jdbc.driver</name>
+		<name>ranger.jpa.audit.jdbc.driver</name>
 		<value>net.sf.log4jdbc.DriverSpy</value>
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.jpa.auditDB.jdbc.url</name>
+		<name>ranger.jpa.audit.jdbc.url</name>
 		<value>jdbc:log4jdbc:mysql://localhost:3306/ranger</value>
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.jpa.auditDB.jdbc.user</name>
+		<name>ranger.jpa.audit.jdbc.user</name>
 		<value>rangerlogger</value>
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.jpa.auditDB.jdbc.password</name>
+		<name>ranger.jpa.audit.jdbc.password</name>
 		<value>rangerlogger</value>
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.jpa.auditDB.jdbc.credential.alias</name>
+		<name>ranger.jpa.audit.jdbc.credential.alias</name>
 		<value>mykey4</value>
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.jpa.auditDB.jdbc.credential.provider.path</name>
+		<name>ranger.jpa.audit.jdbc.credential.provider.path</name>
 		<value>/tmp/mykey4.jceks</value>
 		<description></description>
 	</property>
