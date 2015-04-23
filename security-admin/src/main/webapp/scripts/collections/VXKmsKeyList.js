@@ -17,20 +17,20 @@
  * under the License.
  */
 
-package org.apache.ranger.plugin.model.validation;
+ 
+define(function(require){
+	'use strict';	
 
-import org.apache.ranger.plugin.store.ServiceStore;
+	var VXKmsKeyListBase		= require('collection_bases/VXKmsKeyListBase');
 
-public class RangerValidatorFactory {
-	public RangerServiceValidator getServiceValidator(ServiceStore store) {
-		return new RangerServiceValidator(store);
-	}
+	var VXKmsKeyList = VXKmsKeyListBase.extend(
+	/** @lends VXKmsKeyList.prototype */
+	{
+	},{
+		// static class members
+	});
 
-	public RangerPolicyValidator getPolicyValidator(ServiceStore store) {
-		return new RangerPolicyValidator(store);
-	}
+    return VXKmsKeyList;
+});
 
-	public RangerServiceDefValidator getServiceDefValidator(ServiceStore store) {
-		return new RangerServiceDefValidator(store);
-	}
-}
+

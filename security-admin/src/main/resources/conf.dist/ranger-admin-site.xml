@@ -213,8 +213,12 @@
 		<description></description>
 	</property>
 	<property>
+		<name>ranger.ldap.default.role</name>
+		<value>ROLE_USER</value>
+	</property>
+	<property>
 		<name>ranger.ldap.ad.domain</name>
-		<value></value>
+		<value>freestone.local</value>
 		<description></description>
 	</property>
 	<property>
@@ -493,6 +497,50 @@
 	<property>
 		<name>ranger.accesslog.pattern</name>
 		<value>%h %l %u %t "%r" %s %b "%{Referer}i" "%{User-Agent}i"</value>
+	</property>
+
+<!--  Unix auth properties -->
+
+	<property>
+		<name>ranger.unixauth.remote.login.enabled</name>
+		<value>true</value>
+	</property>
+	<property>
+		<name>ranger.unixauth.service.hostname</name>
+		<value>bigdata.xasecure.net</value>
+	</property>
+	<property>
+		<name>ranger.unixauth.service.port</name>
+		<value>5151</value>
+	</property>
+	<property>
+		<name>ranger.unixauth.ssl.enabled</name>
+		<value>true</value>
+	</property>
+	<property>
+		<name>ranger.unixauth.debug</name>
+		<value>false</value>
+	</property>
+	<property>
+		<name>ranger.unixauth.server.cert.validation</name>
+		<value>false</value>
+	</property>
+
+	<property>
+		<name>ranger.unixauth.keystore</name>
+		<value>keystore.jks</value>
+	</property>
+	<property>
+		<name>ranger.unixauth.keystore.password</name>
+		<value>password</value>
+	</property>
+	<property>
+		<name>ranger.unixauth.truststore</name>
+		<value>cacerts</value>
+	</property>
+	<property>
+		<name>ranger.unixauth.truststore.password</name>
+		<value>changeit</value>
 	</property>
 
 

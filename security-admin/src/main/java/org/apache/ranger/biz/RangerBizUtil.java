@@ -77,6 +77,9 @@ public class RangerBizUtil {
 	@Autowired
 	UserMgr userMgr;
 
+	@Autowired
+	GUIDUtil guidUtil;
+	
 	Set<Class<?>> groupEditableClasses;
 	private Class<?>[] groupEditableClassesList = {};
 
@@ -1314,7 +1317,7 @@ public class RangerBizUtil {
 		if (usb != null) {
 			authSessionId = ContextUtil.getCurrentUserSession().getSessionId();
 		}
-		Long trxId = GUIDUtil.genLong();
+		Long trxId = guidUtil.genLong();
 
 		for (XXTrxLog xTrxLog : trxLogList) {
 			xTrxLog.setTransactionId(trxId.toString());

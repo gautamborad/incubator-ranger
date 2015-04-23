@@ -390,6 +390,14 @@ update_properties() {
 		propertyName=ranger.ks.jpa.jdbc.password
 		newPropertyValue="_"
 		updatePropertyToFilePy $propertyName $newPropertyValue $to_file
+
+		propertyName=ranger.ks.masterkey.credential.alias
+	        newPropertyValue="${MK_CREDENTIAL_ALIAS}"
+                updatePropertyToFilePy $propertyName $newPropertyValue $to_file
+
+                propertyName=ranger.db.encrypt.key.password
+                newPropertyValue="_"
+                updatePropertyToFilePy $propertyName $newPropertyValue $to_file
 	else
 		propertyName="${DB_CREDENTIAL_ATTR}"
 		newPropertyValue="${db_password}"
@@ -415,6 +423,10 @@ update_properties() {
 		newPropertyValue="${KMS_MASTER_KEY_PASSWD}"
 		updatePropertyToFilePy $propertyName $newPropertyValue $to_file
 	fi
+
+	propertyName=hadoop.kms.blacklist.CREATE
+        newPropertyValue="BlacklistUser"
+        updatePropertyToFilePy $propertyName $newPropertyValue $to_file
 
 	###########
 }
@@ -462,7 +474,7 @@ setup_install_files(){
 
 	if [ -d /etc/init.d ]; then
 	    log "[I] Setting up init.d"
-	    cp ${INSTALL_DIR}/${RANGER_KMS}.initd /etc/init.d/${RANGER_KMS}
+	    cp ${INSTALL_DIR}/${RANGER_KMS}-initd /etc/init.d/${RANGER_KMS}
 
 	    chmod ug+rx /etc/init.d/${RANGER_KMS}
 
