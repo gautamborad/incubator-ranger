@@ -43,7 +43,7 @@
 	</property>
 	<property>
 		<name>ranger.jpa.jdbc.url</name>
-		<value>jdbc:log4jdbc:mysql://localhost:3306/ranger</value>
+		<value>jdbc:log4jdbc:mysql://localhost/ranger</value>
 		<description></description>
 	</property>
 	<property>
@@ -117,11 +117,6 @@
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.jpa.jdbc.credential.provider.path</name>
-		<value>/tmp/mykey3.jceks</value>
-		<description></description>
-	</property>
-	<property>
 		<name>ranger.logs.base.dir</name>
 		<value>user.home</value>
 		<description></description>
@@ -154,7 +149,7 @@
 	</property>
 	<property>
 		<name>ranger.jpa.audit.jdbc.url</name>
-		<value>jdbc:log4jdbc:mysql://localhost:3306/ranger</value>
+		<value>jdbc:log4jdbc:mysql://localhost/rangeraudit</value>
 		<description></description>
 	</property>
 	<property>
@@ -169,12 +164,12 @@
 	</property>
 	<property>
 		<name>ranger.jpa.audit.jdbc.credential.alias</name>
-		<value>mykey4</value>
+		<value>rangeraudit</value>
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.jpa.audit.jdbc.credential.provider.path</name>
-		<value>/tmp/mykey4.jceks</value>
+		<name>ranger.credential.provider.path</name>
+		<value>/etc/ranger/admin/keys/ranger_admin.jceks</value>
 		<description></description>
 	</property>
 	<property>
@@ -364,7 +359,7 @@
 
 <!-- #hacks -->
 	<property>
-		<name>ranger.allow.hack=true</name>
+		<name>ranger.allow.hack</name>
 		<value>1</value>
 	</property>
 
@@ -477,7 +472,7 @@
 
 	<property>
 		<name>ranger.service.https.attrib.keystore.pass</name>
-		<value>xasecure</value>
+		<value>ranger</value>
 	</property>
 
 	<property>

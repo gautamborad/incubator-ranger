@@ -67,8 +67,8 @@ public class PropertiesUtil extends PropertyPlaceholderConfigurer {
 	}
 
 	//update credential from keystore
-	if(propertiesMap!=null && propertiesMap.containsKey("ranger.jpa.jdbc.credential.provider.path") && propertiesMap.containsKey("ranger.jpa.jdbc.credential.alias")){
-		String path=propertiesMap.get("ranger.jpa.jdbc.credential.provider.path");
+	if(propertiesMap!=null && propertiesMap.containsKey("ranger.credential.provider.path") && propertiesMap.containsKey("ranger.jpa.jdbc.credential.alias")){
+		String path=propertiesMap.get("ranger.credential.provider.path");
 		String alias=propertiesMap.get("ranger.jpa.jdbc.credential.alias");
 		if(path!=null && alias!=null){
 			String xaDBPassword=CredentialReader.getDecryptedString(path.trim(),alias.trim());
@@ -81,8 +81,8 @@ public class PropertiesUtil extends PropertyPlaceholderConfigurer {
 			}
 		}
 	}
-	if(propertiesMap!=null && propertiesMap.containsKey("ranger.jpa.audit.jdbc.credential.provider.path") && propertiesMap.containsKey("ranger.jpa.audit.jdbc.credential.alias")){
-		String path=propertiesMap.get("ranger.jpa.audit.jdbc.credential.provider.path");
+	if(propertiesMap!=null && propertiesMap.containsKey("ranger.credential.provider.path") && propertiesMap.containsKey("ranger.jpa.audit.jdbc.credential.alias")){
+		String path=propertiesMap.get("ranger.credential.provider.path");
 		String alias=propertiesMap.get("ranger.jpa.audit.jdbc.credential.alias");
 		if(path!=null && alias!=null){
 			String auditDBPassword=CredentialReader.getDecryptedString(path.trim(), alias.trim());
