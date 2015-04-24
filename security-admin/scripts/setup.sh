@@ -1215,6 +1215,7 @@ do_unixauth_setup() {
         updatePropertyToFilePy $propertyName $newPropertyValue $ldap_file
 	else
 		log "[E] $ldap_file does not exists" ; exit 1;
+	fi
 
 	owner=ranger
 	group=ranger

@@ -33,6 +33,21 @@ log() {
    echo "${prefix} $@"
 }
 
+
+updatePropertyToFilePy(){
+    python update_property.py $1 $2 $3
+    check_ret_status $? "Update property failed for: " $1
+}
+
+
+check_ret_status(){
+	if [ $1 -ne 0 ]; then
+		log "[E] $2";
+		exit 1;
+	fi
+}
+
+
 mkdir -p ${pidf}
 chown -R ${unix_user} ${pidf}
 
@@ -286,43 +301,147 @@ if [ ! -d logs ]; then
 fi
 
 
-CFG_FILE="${cdir}/conf/unixauthservice.properties"
-NEW_CFG_FILE=${cdir}/conf/unixauthservice.properties.tmp
+CFG_FILE="${cdir}/conf/ranger-ugsync-site.xml"
 
 if [ -f  ${CFG_FILE}  ]
 then
-    sed \
-	-e "s|^\( *usergroupSync.policymanager.baseURL *=\).*|\1 ${POLICY_MGR_URL}|" \
-	-e "s|^\( *usergroupSync.unix.minUserId *=\).*|\1 ${MIN_UNIX_USER_ID_TO_SYNC}|" \
-	-e "s|^\( *usergroupSync.sleepTimeInMillisBetweenSyncCycle *=\).*|\1 ${SYNC_INTERVAL}|" \
-	-e "s|^\( *usergroupSync.source.impl.class *=\).*|\1 ${SYNC_SOURCE}|" \
-	-e "s|^\( *ldapGroupSync.ldapUrl *=\).*|\1 ${SYNC_LDAP_URL}|" \
-	-e "s|^\( *ldapGroupSync.ldapBindDn *=\).*|\1 ${SYNC_LDAP_BIND_DN}|" \
-	-e "s|^\( *ldapGroupSync.ldapBindPassword *=\).*|\1 ${SYNC_LDAP_BIND_PASSWORD}|" \
-	-e "s|^\( *ldapGroupSync.ldapBindKeystore *=\).*|\1 ${SYNC_LDAP_BIND_KEYSTOREPATH}|" \
-	-e "s|^\( *ldapGroupSync.ldapBindAlias *=\).*|\1 ${SYNC_LDAP_BIND_ALIAS}|" \
-	-e "s|^\( *ldapGroupSync.searchBase *=\).*|\1 ${SYNC_LDAP_SEARCH_BASE}|" \
-	-e "s|^\( *ldapGroupSync.userSearchScope *=\).*|\1 ${SYNC_LDAP_USER_SEARCH_SCOPE}|" \
-	-e "s|^\( *ldapGroupSync.userObjectClass *=\).*|\1 ${SYNC_LDAP_USER_OBJECT_CLASS}|" \
-	-e "s%^\( *ldapGroupSync.userSearchFilter *=\).*%\1 ${SYNC_LDAP_USER_SEARCH_FILTER}%" \
-	-e "s|^\( *ldapGroupSync.userNameAttribute *=\).*|\1 ${SYNC_LDAP_USER_NAME_ATTRIBUTE}|" \
-	-e "s|^\( *ldapGroupSync.userGroupNameAttribute *=\).*|\1 ${SYNC_LDAP_USER_GROUP_NAME_ATTRIBUTE}|" \
-	-e "s|^\( *ldapGroupSync.username.caseConversion *=\).*|\1 ${SYNC_LDAP_USERNAME_CASE_CONVERSION}|" \
-	-e "s|^\( *ldapGroupSync.groupname.caseConversion *=\).*|\1 ${SYNC_LDAP_GROUPNAME_CASE_CONVERSION}|" \
-	-e "s|^\( *logdir *=\).*|\1 ${logdir}|" \
-	-e "s|^\( *ldapGroupSync.pagedResultsEnabled *=\).*|\1 ${SYNC_PAGED_RESULTS_ENABLED}|" \
-	-e "s|^\( *ldapGroupSync.pagedResultsSize *=\).*|\1 ${SYNC_PAGED_RESULTS_SIZE}|" \
-	-e "s|^\( *ldapGroupSync.groupSearchEnabled *=\).*|\1 ${SYNC_GROUP_SEARCH_ENABLED}|" \
-	-e "s|^\( *ldapGroupSync.groupUserMapSyncEnabled *=\).*|\1 ${SYNC_GROUP_USER_MAP_SYNC_ENABLED}|" \
-	-e "s|^\( *ldapGroupSync.groupSearchBase *=\).*|\1 ${SYNC_GROUP_SEARCH_BASE}|" \
-	-e "s|^\( *ldapGroupSync.groupSearchScope *=\).*|\1 ${SYNC_GROUP_SEARCH_SCOPE}|" \
-	-e "s|^\( *ldapGroupSync.groupObjectClass *=\).*|\1 ${SYNC_GROUP_OBJECT_CLASS}|" \
-	-e "s|^\( *ldapGroupSync.groupSearchFilter *=\).*|\1 ${SYNC_GROUP_SEARCH_FILTER}|" \
-	-e "s|^\( *ldapGroupSync.groupNameAttribute *=\).*|\1 ${SYNC_GROUP_NAME_ATTRIBUTE}|" \
-	-e "s|^\( *ldapGroupSync.groupMemberAttributeName *=\).*|\1 ${SYNC_GROUP_MEMBER_ATTRIBUTE_NAME}|" \
-	${CFG_FILE} > ${NEW_CFG_FILE}
+	log "[I] $CFG_FILE file found"
 
-    echo "<${logdir}> ${CFG_FILE} > ${NEW_CFG_FILE}"
+
+	propertyName=ranger.usersync.source.impl.class
+	newPropertyValue=${SYNC_SOURCE}
+	updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+
+	propertyName=ranger.usersync.policymanager.baseURL
+	newPropertyValue=${POLICY_MGR_URL}
+	updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+
+	propertyName=ranger.usersync.unix.minUserId
+	newPropertyValue=${MIN_UNIX_USER_ID_TO_SYNC}
+	updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+  propertyName=ranger.usersync.sleeptimeinmillisbetweensynccycle
+  newPropertyValue=${SYNC_INTERVAL}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+
+
+
+  propertyName=ranger.usersync.ldap.url
+  newPropertyValue=${SYNC_LDAP_URL}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+  propertyName=ranger.usersync.ldap.binddn
+  newPropertyValue=${SYNC_LDAP_BIND_DN}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+
+  propertyName=ranger.usersync.ldap.ldapbindpassword
+  newPropertyValue=${SYNC_LDAP_BIND_PASSWORD}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+  propertyName=ranger.usersync.ldap.bindalias
+  newPropertyValue=${SYNC_LDAP_BIND_ALIAS}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+  propertyName=ranger.usersync.ldap.bindkeystore
+  newPropertyValue=${SYNC_LDAP_BIND_KEYSTOREPATH}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+  propertyName=ranger.usersync.ldap.searchBase
+  newPropertyValue=${SYNC_LDAP_SEARCH_BASE}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+  propertyName=ranger.usersync.ldap.user.searchbase
+  newPropertyValue=${SYNC_LDAP_USER_SEARCH_BASE}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+  propertyName=ranger.usersync.ldap.user.searchscope
+  newPropertyValue=${SYNC_LDAP_USER_SEARCH_SCOPE}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+  propertyName=ranger.usersync.ldap.user.objectclass
+  newPropertyValue=${SYNC_LDAP_USER_OBJECT_CLASS}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+  propertyName=ranger.usersync.ldap.user.searchfilter
+  newPropertyValue=${SYNC_LDAP_USER_SEARCH_FILTER}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+  propertyName=ranger.usersync.ldap.user.nameattribute
+  newPropertyValue=${SYNC_LDAP_USER_NAME_ATTRIBUTE}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+  propertyName=ranger.usersync.ldap.user.groupnameattribute
+  newPropertyValue=${SYNC_LDAP_USER_GROUP_NAME_ATTRIBUTE}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+  propertyName=ranger.usersync.ldap.username.caseconversion
+  newPropertyValue=${SYNC_LDAP_USERNAME_CASE_CONVERSION}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+  propertyName=ranger.usersync.ldap.username.caseconversion
+  newPropertyValue=${SYNC_LDAP_USERNAME_CASE_CONVERSION}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+  propertyName=ranger.usersync.ldap.groupname.caseconversion
+  newPropertyValue=${SYNC_LDAP_GROUPNAME_CASE_CONVERSION}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+  propertyName=ranger.usersync.ldap.groupname.caseconversion
+  newPropertyValue=${SYNC_LDAP_GROUPNAME_CASE_CONVERSION}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+  propertyName=ranger.usersync.logdir
+  newPropertyValue=${logdir}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+  propertyName=ranger.usersync.group.searchenabled
+  newPropertyValue=${SYNC_GROUP_SEARCH_ENABLED}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+  propertyName=ranger.usersync.group.usermapsyncenabled
+  newPropertyValue=${SYNC_GROUP_USER_MAP_SYNC_ENABLED}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+  propertyName=ranger.usersync.group.searchbase
+  newPropertyValue=${SYNC_GROUP_SEARCH_BASE}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+  propertyName=ranger.usersync.group.searchscope
+  newPropertyValue=${SYNC_GROUP_SEARCH_SCOPE}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+  propertyName=ranger.usersync.group.objectclass
+  newPropertyValue=${SYNC_GROUP_OBJECT_CLASS}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+  propertyName=ranger.usersync.group.searchfilter
+  newPropertyValue=${SYNC_GROUP_SEARCH_FILTER}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+  propertyName=ranger.usersync.group.nameattribute
+  newPropertyValue=${SYNC_GROUP_NAME_ATTRIBUTE}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+  propertyName=ranger.usersync.group.memberattributename
+  newPropertyValue=${SYNC_GROUP_MEMBER_ATTRIBUTE_NAME}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+  propertyName=ranger.usersync.pagedresultsenabled
+  newPropertyValue=${SYNC_PAGED_RESULTS_ENABLED}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+  propertyName=ranger.usersync.pagedresultssize
+  newPropertyValue=${SYNC_PAGED_RESULTS_SIZE}
+  updatePropertyToFilePy $propertyName $newPropertyValue $CFG_FILE
+
+
+
+
+
 else
     echo "ERROR: Required file, not found: ${CFG_FILE}, Aborting installation"
     exit 8

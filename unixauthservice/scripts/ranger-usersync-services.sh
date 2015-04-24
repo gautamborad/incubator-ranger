@@ -82,7 +82,6 @@ if [ ${action^^} == "START" ]; then
 	exit;
 
 elif [ ${action^^} == "STOP" ]; then
-	port=`grep  '^[ ]*authServicePort' ${cdir}/conf/unixauthservice.properties | awk -F= '{ print $2 }' | awk '{ print $1 }'`
 
     if [ -f $pidf ]; then
             pidf=/var/run/ranger/usersync.pid

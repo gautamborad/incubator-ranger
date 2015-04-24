@@ -88,7 +88,6 @@ public class RangerAuthenticationProvider implements AuthenticationProvider {
 			LdapContextSource ldapContextSource = new DefaultSpringSecurityContextSource(
 					rangerLdapURL);
 
-			// TODO need to debug the flags.
 			ldapContextSource.setCacheEnvironmentProperties(false);
 			ldapContextSource.setAnonymousReadOnly(true);
 
