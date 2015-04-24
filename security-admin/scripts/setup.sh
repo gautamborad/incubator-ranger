@@ -942,7 +942,7 @@ update_properties() {
 		updatePropertyToFilePy $propertyName $newPropertyValue $to_file
 
 #		propertyName=xaDB.jdbc.credential.provider.path
-		propertyName=ranger.jpa.jdbc.credential.provider.path
+		propertyName=ranger.credential.provider.path
 		newPropertyValue="${keystore}"
 		updatePropertyToFilePy $propertyName $newPropertyValue $to_file
 
@@ -985,11 +985,12 @@ update_properties() {
 		propertyName=ranger.jpa.auditDB.jdbc.credential.alias
 		newPropertyValue="${audit_db_password_alias}"
 		updatePropertyToFilePy $propertyName $newPropertyValue $to_file
-		
+	
+		#Use the same provider file for both audit/admin db
 #		propertyName=auditDB.jdbc.credential.provider.path
-		propertyName=ranger.jpa.auditDB.jdbc.credential.provider.path
-		newPropertyValue="${keystore}"
-		updatePropertyToFilePy $propertyName $newPropertyValue $to_file
+		#propertyName=ranger.credential.provider.path
+		#newPropertyValue="${keystore}"
+		#updatePropertyToFilePy $propertyName $newPropertyValue $to_file
 		
 #		propertyName=auditDB.jdbc.password
 		propertyName=ranger.jpa.auditDB.jdbc.password
