@@ -30,11 +30,6 @@
 		<value>ranger</value>
 		<description></description>
 	</property>
-	<property>
-		<name>ranger.jpa.jdbc.dialect</name>
-		<value>org.eclipse.persistence.platform.database.MySQLPlatform</value>
-		<description></description>
-	</property>
 <!-- # DB Info -->
 	<property>
 		<name>ranger.jpa.jdbc.driver</name>
@@ -62,66 +57,6 @@
 		<description></description>
 	</property>
 	<property>
-		<name>ranger.webapp.contextName</name>
-		<value>/</value>
-		<description></description>
-	</property>
-	<property>
-		<name>ranger.jpa.showsql</name>
-		<value>false</value>
-		<description></description>
-	</property>
-	<property>
-		<name>ranger.env.local</name>
-		<value>true</value>
-		<description></description>
-	</property>	
-	<property>
-		<name>ranger.jpa.jdbc.maxpoolsize</name>
-		<value>40</value>
-		<description></description>
-	</property>
-	<property>
-		<name>ranger.jpa.jdbc.minpoolsize</name>
-		<value>5</value>
-		<description></description>
-	</property>
-	<property>
-		<name>ranger.jpa.jdbc.initialpoolsize</name>
-		<value>5</value>
-		<description></description>
-	</property>
-	<property>
-		<name>ranger.jpa.jdbc.maxidletime</name>
-		<value>300</value>
-		<description></description>
-	</property>
-	<property>
-		<name>ranger.jpa.jdbc.maxstatements</name>
-		<value>500</value>
-		<description></description>
-	</property>
-	<property>
-		<name>ranger.jpa.jdbc.preferredtestquery</name>
-		<value>select 1;</value>
-		<description></description>
-	</property>
-	<property>
-		<name>ranger.jpa.jdbc.idleconnectiontestperiod</name>
-		<value>60</value>
-		<description></description>
-	</property>
-	<property>
-		<name>ranger.jpa.jdbc.credential.alias</name>
-		<value>mykey3</value>
-		<description></description>
-	</property>
-	<property>
-		<name>ranger.logs.base.dir</name>
-		<value>user.home</value>
-		<description></description>
-	</property>
-	<property>
 		<name>ranger.scheduler.enabled</name>
 		<value>true</value>
 		<description></description>
@@ -137,11 +72,7 @@
 		<description></description>
 	</property>
 <!-- # DB Info for audit_DB -->
-	<property>
-		<name>ranger.jpa.audit.jdbc.dialect</name>
-		<value>org.eclipse.persistence.platform.database.MySQLPlatform</value>
-		<description></description>
-	</property>
+
 	<property>
 		<name>ranger.jpa.audit.jdbc.driver</name>
 		<value>net.sf.log4jdbc.DriverSpy</value>
@@ -160,16 +91,6 @@
 	<property>
 		<name>ranger.jpa.audit.jdbc.password</name>
 		<value>rangerlogger</value>
-		<description></description>
-	</property>
-	<property>
-		<name>ranger.jpa.audit.jdbc.credential.alias</name>
-		<value>rangeraudit</value>
-		<description></description>
-	</property>
-	<property>
-		<name>ranger.credential.provider.path</name>
-		<value>/etc/ranger/admin/keys/ranger_admin.jceks</value>
 		<description></description>
 	</property>
 	<property>
@@ -419,15 +340,6 @@
 		<value>6080</value>
 	</property>
 
-	<property>
-		<name>ranger.service.shutdown.port</name>
-		<value>6085</value>
-	</property>
-
-	<property>
-		<name>ranger.service.shutdown.command</name>
-		<value>SHUTDOWN</value>
-	</property>
 
 <!--
 # This property has already been included above.
@@ -456,16 +368,6 @@
 	</property> 
 
 	<property>
-		<name>ranger.service.https.attrib.ssl.protocol</name>
-		<value>TLS</value>
-	</property>
-
-	<property>
-		<name>ranger.service.https.attrib.client.auth</name>
-		<value>false</value>
-	</property>
-
-	<property>
 		<name>ranger.service.https.attrib.keystore.keyalias</name>
 		<value>myKey</value>
 	</property>
@@ -478,20 +380,6 @@
 	<property>
 		<name>ranger.service.https.attrib.keystore.file</name>
 		<value>/etc/ranger/admin/keys/server.jks</value>
-	</property>
-
-<!-- #
-# Access Log Information
-# -->
-
-	<property>
-		<name>ranger.accesslog.dateformat</name>
-		<value>yyyy-MM-dd</value>
-	</property>
-
-	<property>
-		<name>ranger.accesslog.pattern</name>
-		<value>%h %l %u %t "%r" %s %b "%{Referer}i" "%{User-Agent}i"</value>
 	</property>
 
 <!--  Unix auth properties -->
