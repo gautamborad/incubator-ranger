@@ -911,6 +911,10 @@ update_properties() {
 
 		$JAVA_HOME/bin/java -cp "cred/lib/*" org.apache.ranger.credentialapi.buildks create "$db_password_alias" -value "$db_password" -provider jceks://file$keystore
 
+ 		propertyName=ranger.credential.provider.path
+ 		newPropertyValue="${keystore}"
+ 		updatePropertyToFilePy $propertyName $newPropertyValue $to_file_default
+
 		propertyName=ranger.jpa.jdbc.credential.alias
 		newPropertyValue="${db_password_alias}"
 		updatePropertyToFilePy $propertyName $newPropertyValue $to_file_default
