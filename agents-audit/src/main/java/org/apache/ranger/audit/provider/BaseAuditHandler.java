@@ -191,13 +191,10 @@ public abstract class BaseAuditHandler implements AuditHandler {
 			return String.format("%03d milli-seconds", mSeconds);
 	}
 
-<<<<<<< HEAD:agents-audit/src/main/java/org/apache/ranger/audit/provider/BaseAuditHandler.java
-=======
 	public void logFailedEvent(AuditEventBase event) {
 		logFailedEvent(event, "");
 	}
 
->>>>>>> aac45d633b2d8589446d23326918b6109065dbff:agents-audit/src/main/java/org/apache/ranger/audit/provider/BaseAuditHandler.java
 	public void logFailedEvent(AuditEventBase event, Throwable excp) {
 		long now = System.currentTimeMillis();
 
@@ -228,21 +225,16 @@ public abstract class BaseAuditHandler implements AuditHandler {
 		}
 	}
 
-<<<<<<< HEAD:agents-audit/src/main/java/org/apache/ranger/audit/provider/BaseAuditHandler.java
-=======
 	public void logFailedEvent(Collection<AuditEventBase> events) {
 		logFailedEvent(events, "");
 	}
 
->>>>>>> aac45d633b2d8589446d23326918b6109065dbff:agents-audit/src/main/java/org/apache/ranger/audit/provider/BaseAuditHandler.java
 	public void logFailedEvent(Collection<AuditEventBase> events, Throwable excp) {
 		for (AuditEventBase event : events) {
 			logFailedEvent(event, excp);
 		}
 	}
 
-<<<<<<< HEAD:agents-audit/src/main/java/org/apache/ranger/audit/provider/BaseAuditHandler.java
-=======
 	public void logFailedEvent(AuditEventBase event, String message) {
 		long now = System.currentTimeMillis();
 
@@ -274,7 +266,6 @@ public abstract class BaseAuditHandler implements AuditHandler {
 		}
 	}
 
->>>>>>> aac45d633b2d8589446d23326918b6109065dbff:agents-audit/src/main/java/org/apache/ranger/audit/provider/BaseAuditHandler.java
 	public void logFailedEventJSON(String event, Throwable excp) {
 		long now = System.currentTimeMillis();
 
@@ -308,8 +299,4 @@ public abstract class BaseAuditHandler implements AuditHandler {
 		}
 	}
 
-<<<<<<< HEAD:agents-audit/src/main/java/org/apache/ranger/audit/provider/BaseAuditHandler.java
-	
-=======
->>>>>>> aac45d633b2d8589446d23326918b6109065dbff:agents-audit/src/main/java/org/apache/ranger/audit/provider/BaseAuditHandler.java
 }
