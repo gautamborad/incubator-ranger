@@ -43,6 +43,8 @@ import org.w3c.dom.NodeList;
 public class UserGroupSyncConfig  {
 
 	public static final String CONFIG_FILE = "ranger-ugsync-site.xml" ;
+
+	public static final String DEFAULT_CONFIG_FILE = "ranger-ugsync-default-site.xml" ;
 	
 	public static final String  UGSYNC_ENABLED_PROP = "ranger.usersync.enabled" ;
 	
@@ -184,10 +186,14 @@ public class UserGroupSyncConfig  {
 		init() ;
 	}
 	
-	
 	private void init() {
+		readConfigFile(CONFIG_FILE);
+		readConfigFile(DEFAULT_CONFIG_FILE);
+	}
+	
+	private void readConfigFile(String fileName) {
 		try {
-			InputStream in = getFileInputStream(CONFIG_FILE) ;
+			InputStream in = getFileInputStream(fileName);
 			if (in != null) {
 				try {
 //					prop.load(in) ;
