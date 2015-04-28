@@ -63,6 +63,7 @@ import org.apache.ranger.plugin.model.RangerPolicy.RangerPolicyItemAccess;
 import org.apache.ranger.plugin.model.RangerPolicy.RangerPolicyResource;
 import org.apache.ranger.plugin.model.RangerService;
 import org.apache.ranger.plugin.model.RangerServiceDef;
+import org.apache.ranger.plugin.model.validation.RangerPolicyValidator;
 import org.apache.ranger.plugin.model.validation.RangerServiceDefValidator;
 import org.apache.ranger.plugin.model.validation.RangerServiceValidator;
 import org.apache.ranger.plugin.model.validation.RangerValidator.Action;
