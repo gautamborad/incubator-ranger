@@ -173,6 +173,7 @@ public class UnixAuthenticationService {
 									.item(0).getTextContent().trim();
 						}
 
+						LOG.info("Adding Property:[" + propertyName + "] Value:"+ propertyValue);
 						prop.put(propertyName, propertyValue);
 
 					}
