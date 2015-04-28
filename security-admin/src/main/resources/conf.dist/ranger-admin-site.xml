@@ -14,22 +14,6 @@
 
 
 <configuration>
-<!-- #Hibernate/JPA settings -->
-	<property>
-		<name>ranger.jdbc.sqlconnectorjar</name>
-		<value>/usr/share/java/mysql-connector-java.jar</value>
-		<description></description>
-	</property>
-	<property>
-		<name>ranger.service.user</name>
-		<value>ranger</value>
-		<description></description>
-	</property>
-	<property>
-		<name>ranger.service.group</name>
-		<value>ranger</value>
-		<description></description>
-	</property>
 <!-- # DB Info -->
 	<property>
 		<name>ranger.jpa.jdbc.driver</name>
@@ -143,225 +127,6 @@
 		<description>ldap://</description>
 	</property>
 
-
-	<property>
-		<name>ajp.enabled</name>
-		<value>false</value>
-		<description></description>
-	</property>
-	
-	
-<!-- ################### System override properties (default values)\u0192 ################## -->
-<!-- #Search properties -->
-	<property>
-		<name>ranger.db.maxrows.default</name>
-		<value>200</value>
-	</property>
-	<property>
-		<name>ranger.db.min_inlist</name>
-		<value>20</value>
-	</property>
-	<property>
-		<name>ranger.ui.defaultDateformat</name>
-		<value>MM/dd/yyyy</value>
-	</property>
-	<property>
-		<name>ranger.db.defaultDateformat</name>
-		<value>yyyy-MM-dd</value>
-	</property>
-
-<!-- #Security Spring configurations -->
-	<property>
-		<name>ranger.ajax.auth.required.code</name>
-		<value>401</value>
-	</property>
-	<property>
-		<name>ranger.ajax.auth.success.page</name>
-		<value>/ajax_success.html</value>
-	</property>
-	<property>
-		<name>ranger.logout.success.page</name>
-		<value>/login.jsp?action=logged_out</value>
-	</property>
-	<property>
-		<name>ranger.ajax.auth.failure.page</name>
-		<value>/ajax_failure.jsp</value>
-	</property>
-
-<!-- #Role list -->
-	<property>
-		<name>ranger.users.roles.list</name>
-		<value>ROLE_SYS_ADMIN, ROLE_USER, ROLE_OTHER, ROLE_ANON</value>
-	</property>
-<!-- #Mail listing -->
-	<property>
-		<name>ranger.mail.enabled</name>
-		<value>true</value>
-	</property>
-	<property>
-		<name>ranger.mail.smtp.auth</name>
-		<value>false</value>
-	</property>
-	<property>
-		<name>ranger.mail.retry.sleep.ms</name>
-		<value>2000</value>
-	</property>
-	<property>
-		<name>ranger.mail.retry.max.count</name>
-		<value>5</value>
-	</property>
-	<property>
-		<name>ranger.mail.retry.sleep.incr_factor</name>
-		<value>1</value>
-	</property>
-	<property>
-		<name>ranger.mail.listener.enable</name>
-		<value>false</value>
-	</property>
-<!-- #Hibernate/JPA settings -->
-	<property>
-		<name>ranger.jpa.showsql</name>
-		<value>false</value>
-	</property>
-
-
-
-
-<!-- #Second Level Cache -->
-	<property>
-		<name>ranger.second_level_cache</name>
-		<value>true</value>
-	</property>
-	<property>
-		<name>ranger.use_query_cache</name>
-		<value>true</value>
-	</property>
-
-<!-- ############################### General application properties ############################## -->
-	<property>
-		<name>ranger.user.firstname.maxlength</name>
-		<value>16</value>
-	</property>
-	<property>
-		<name>ranger.bookmark.name.maxlen</name>
-		<value>150</value>
-	</property>
-	
-<!-- #RBAC -->
-	<property>
-		<name>ranger.rbac.enable</name>
-		<value>false</value>
-	</property>
-
-
-
-
-
-<!-- #REST paths -->
-	<property>
-		<name>ranger.rest.paths</name>
-		<value>org.apache.ranger.rest,xa.rest</value>
-	</property>
-
-<!-- #Password -->
-	<property>
-		<name>ranger.password.hidden</name>
-		<value>*****</value>
-	</property>
-	<property>
-		<name>ranger.resource.accessControl.enabled</name>
-		<value>true</value>
-	</property>
-	<property>
-		<name>ranger.xuser.createdByUserId</name>
-		<value>1</value>
-	</property>
-
-
-<!-- #hacks -->
-	<property>
-		<name>ranger.allow.hack</name>
-		<value>1</value>
-	</property>
-
-
-<!-- #audit logging -->
-	<property>
-		<name>ranger.log.SC_NOT_MODIFIED</name>
-		<value>false</value>
-	</property>
-
-<!-- # ServletMapping Url Pattern -->
-	<property>
-		<name>ranger.servlet.mapping.url.pattern</name>
-		<value>false</value>
-	</property>
-
-
-
-<!-- # File Separator -->
-
-	<property>
-		<name>ranger.file.separator</name>
-		<value>/</value>
-	</property>
-
-	<property>
-		<name>ranger.db.access.filter.enable</name>
-		<value>true</value>
-	</property>
-	<property>
-		<name>ranger.moderation.enabled</name>
-		<value>false</value>
-	</property>
-	<property>
-		<name>ranger.userpref.enabled</name>
-		<value>false</value>
-	</property>
-
-
-<!-- Embedded Web-Server properties  -->
-
-
-
-<!--
-#
-# Service Information
-#
--->
-
-	<property>
-		<name>ranger.service.host</name>
-		<value>localhost</value>
-	</property>
-
-	<property>
-		<name>ranger.service.http.port</name>
-		<value>6080</value>
-	</property>
-
-
-<!--
-# This property has already been included above.
-# Set ajp.enabled=true, if ranger-admin is behind an apache loadbalancer 
-# and loadbalancer is listening on https for requests from clients
-# and  BalancerMember configuration in Apache is pointing to ajp protocol
--->
-<!-- 
-	<property>
-		<name>ajp.enabled</name>
-		<value>false</value>
-	</property>
- -->
-<!-- #
-# SSL Connector Information
-#  -->
-
-	<property>
-		<name>ranger.service.https.port</name>
-		<value>6182</value>
-	</property>
-
 	<property>
 		<name>ranger.service.https.attrib.ssl.enabled</name>
 		<value>false</value>
@@ -378,59 +143,23 @@
 	</property>
 
 	<property>
+		<name>ranger.service.host</name>
+		<value>localhost</value>
+	</property>
+
+	<property>
+		<name>ranger.service.http.port</name>
+		<value>6080</value>
+	</property>
+
+	<property>
+		<name>ranger.service.https.port</name>
+		<value>6182</value>
+	</property>
+
+	<property>
 		<name>ranger.service.https.attrib.keystore.file</name>
 		<value>/etc/ranger/admin/keys/server.jks</value>
 	</property>
 
-<!--  Unix auth properties -->
-
-	<property>
-		<name>ranger.unixauth.remote.login.enabled</name>
-		<value>true</value>
-	</property>
-	<property>
-		<name>ranger.unixauth.service.hostname</name>
-		<value>bigdata.xasecure.net</value>
-	</property>
-	<property>
-		<name>ranger.unixauth.service.port</name>
-		<value>5151</value>
-	</property>
-	<property>
-		<name>ranger.unixauth.ssl.enabled</name>
-		<value>true</value>
-	</property>
-	<property>
-		<name>ranger.unixauth.debug</name>
-		<value>false</value>
-	</property>
-	<property>
-		<name>ranger.unixauth.server.cert.validation</name>
-		<value>false</value>
-	</property>
-
-	<property>
-		<name>ranger.unixauth.keystore</name>
-		<value>keystore.jks</value>
-	</property>
-	<property>
-		<name>ranger.unixauth.keystore.password</name>
-		<value>password</value>
-	</property>
-	<property>
-		<name>ranger.unixauth.truststore</name>
-		<value>cacerts</value>
-	</property>
-	<property>
-		<name>ranger.unixauth.truststore.password</name>
-		<value>changeit</value>
-	</property>
-
-
-<!-- Maven project Version  -->
-	<property>
-		<name>maven.project.version</name>
-		<value>${project.version}</value>
-		<description></description>
-	</property>
 </configuration>
