@@ -38,7 +38,7 @@ pidFolderName = '/var/run/ranger'
 logFolderName = '/var/log/ranger'
 initdDirName = '/etc/init.d'
 
-rangerBaseDirName = '/etc/ranger'
+rangerBaseDirName = os.getcwd() #'/etc/ranger'
 usersyncBaseDirName = 'usersync'
 confBaseDirName = 'conf'
 confDistBaseDirName = 'conf.dist'
@@ -105,7 +105,7 @@ def getXMLConfigMap(xmlFileName):
     ret = {}
     tree = ET.parse(xmlFileName)
     root = tree.getroot()
-    for config in root.iter('property'):
+    for config in root.findall('property'):
         name = config.find('name').text
         val = config.find('value').text
         ret[name] = val
@@ -141,7 +141,7 @@ def getPropertiesKeyList(configFileName):
 def writeXMLUsingProperties(xmlTemplateFileName,prop,xmlOutputFileName):
     tree = ET.parse(xmlTemplateFileName)
     root = tree.getroot()
-    for config in root.iter('property'):
+    for config in root.findall('property'):
         name = config.find('name').text
         if (name in prop.keys()):
             config.find('value').text = prop[name]
