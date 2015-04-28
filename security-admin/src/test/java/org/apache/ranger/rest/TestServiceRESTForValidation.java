@@ -205,7 +205,6 @@ public class TestServiceRESTForValidation {
 		}
 	}
 
-	@Ignore("Disabled pending with hive policy creation-failure")
 	@Test
 	final public void testPolicy_happyPath() {
 		setupBizUtils();
@@ -222,23 +221,6 @@ public class TestServiceRESTForValidation {
 		}
 	}
 	
-	@Ignore("Disabled pending with hive policy creation-failure")
-	@Test
-	public void testPolicy_happyPath_deletion() {
-		setupBizUtils();
-		
-		try {
-			long id = 3;
-			ServiceREST spy = setupForDelete(id);
-			spy.deletePolicy(id);
-			verify(_policyValidator).validate(id, Action.DELETE);
-		} catch (Exception e) {
-			LOG.debug(e);
-			fail("unexpected exception");
-		}
-	}
-	
-	@Ignore("Disabled pending with hive policy creation-failure")
 	@Test
 	final public void testPolicy_happyPath_deletion() {
 		setupBizUtils();
@@ -297,7 +279,6 @@ public class TestServiceRESTForValidation {
 		}
 	}
 	
-	@Ignore("Disabled pending with hive policy creation-failure")
 	@Test
 	final public void testPolicy_storeFailure() throws Exception {
 
