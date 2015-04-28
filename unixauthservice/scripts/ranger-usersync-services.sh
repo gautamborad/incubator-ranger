@@ -45,13 +45,8 @@ if [ ${action^^} == "START" ]; then
         	export PATH=$JAVA_HOME/bin:$PATH
 	fi
 
-	logdir=`grep -P '^[ \t]*logdir[ \t]*=' ${cdir}/install.properties | awk -F= '{ print $2 }' | tr '\t' ' ' | sed -e 's:[ ]::g'`
-	if [ ! -d ${logdir} ]
-	then
-        logdir=/var/log/ranger/usersync
-        [ ! -d ${logdir} ] && mkdir -p ${logdir}
-        chown ranger:ranger ${logdir}
-	fi
+    logdir=/var/log/ranger/usersync
+
 	cp="${cdir}/dist/*:${cdir}/lib/*:${cdir}/conf"
 
     if [ -f $pidf ]; then
