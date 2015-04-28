@@ -191,7 +191,7 @@ public class AsyncAuditProvider extends MultiDestAuditProvider implements
 				waitTime = waitTime <= 0 ? intervalLogDurationMS : waitTime;
 
 				ret = mQueue.poll(waitTime, TimeUnit.MILLISECONDS);
-//			}
+			}
 		}
 
 		if(ret != null) {
