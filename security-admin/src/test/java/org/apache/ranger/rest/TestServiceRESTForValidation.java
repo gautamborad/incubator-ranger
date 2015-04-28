@@ -207,7 +207,7 @@ public class TestServiceRESTForValidation {
 
 	@Ignore("Disabled pending with hive policy creation-failure")
 	@Test
-	public void testPolicy_happyPath() {
+	final public void testPolicy_happyPath() {
 		setupBizUtils();
 		
 		try {
@@ -240,7 +240,22 @@ public class TestServiceRESTForValidation {
 	
 	@Ignore("Disabled pending with hive policy creation-failure")
 	@Test
-	public void testPolicy_validatorFailure() throws Exception {
+	final public void testPolicy_happyPath_deletion() {
+		setupBizUtils();
+		
+		try {
+			long id = 3;
+			ServiceREST spy = setupForDelete(id);
+			spy.deletePolicy(id);
+			verify(_policyValidator).validate(id, Action.DELETE);
+		} catch (Exception e) {
+			LOG.debug(e);
+			fail("unexpected exception");
+		}
+	}
+	
+	@Test
+	final public void testPolicy_validatorFailure() throws Exception {
 
 		// let's have bizutil return true everytime
 		setupBizUtils();
@@ -284,7 +299,7 @@ public class TestServiceRESTForValidation {
 	
 	@Ignore("Disabled pending with hive policy creation-failure")
 	@Test
-	public void testPolicy_storeFailure() throws Exception {
+	final public void testPolicy_storeFailure() throws Exception {
 
 		// let's have bizutils return true for now
 		setupBizUtils();
@@ -314,9 +329,8 @@ public class TestServiceRESTForValidation {
 		}
 	}
 
-	@Ignore("Disabled pending with hive policy creation-failure")
 	@Test
-	public void testPolicy_storeFailure_forDelete() throws Exception {
+	final public void testPolicy_storeFailure_forDelete() throws Exception {
 
 		// let's have bizutils return true for now
 		setupBizUtils();

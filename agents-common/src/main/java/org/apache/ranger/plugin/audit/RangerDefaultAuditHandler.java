@@ -27,13 +27,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.ranger.audit.model.AuthzAuditEvent;
 import org.apache.ranger.audit.provider.AuditProviderFactory;
+import org.apache.ranger.audit.provider.MiscUtil;
 import org.apache.ranger.plugin.model.RangerServiceDef;
 import org.apache.ranger.plugin.policyengine.RangerAccessRequest;
 import org.apache.ranger.plugin.policyengine.RangerAccessResult;
 import org.apache.ranger.plugin.policyengine.RangerAccessResource;
+import org.apache.ranger.plugin.policyengine.RangerAccessResultProcessor;
 
 
-public class RangerDefaultAuditHandler implements RangerAuditHandler {
+public class RangerDefaultAuditHandler implements RangerAccessResultProcessor {
 	private static final Log LOG = LogFactory.getLog(RangerDefaultAuditHandler.class);
 
 
@@ -41,9 +43,9 @@ public class RangerDefaultAuditHandler implements RangerAuditHandler {
 	}
 
 	@Override
-	public void logAudit(RangerAccessResult result) {
+	public void processResult(RangerAccessResult result) {
 		if(LOG.isDebugEnabled()) {
-			LOG.debug("==> RangerDefaultAuditHandler.logAudit(" + result + ")");
+			LOG.debug("==> RangerDefaultAuditHandler.processResult(" + result + ")");
 		}
 
 		AuthzAuditEvent event = getAuthzEvents(result);
@@ -51,14 +53,14 @@ public class RangerDefaultAuditHandler implements RangerAuditHandler {
 		logAuthzAudit(event);
 
 		if(LOG.isDebugEnabled()) {
-			LOG.debug("<== RangerDefaultAuditHandler.logAudit(" + result + ")");
+			LOG.debug("<== RangerDefaultAuditHandler.processResult(" + result + ")");
 		}
 	}
 
 	@Override
-	public void logAudit(Collection<RangerAccessResult> results) {
+	public void processResults(Collection<RangerAccessResult> results) {
 		if(LOG.isDebugEnabled()) {
-			LOG.debug("==> RangerDefaultAuditHandler.logAudit(" + results + ")");
+			LOG.debug("==> RangerDefaultAuditHandler.processResults(" + results + ")");
 		}
 
 		Collection<AuthzAuditEvent> events = getAuthzEvents(results);
@@ -66,7 +68,7 @@ public class RangerDefaultAuditHandler implements RangerAuditHandler {
 		logAuthzAudits(events);
 
 		if(LOG.isDebugEnabled()) {
-			LOG.debug("<== RangerDefaultAuditHandler.logAudit(" + results + ")");
+			LOG.debug("<== RangerDefaultAuditHandler.processResults(" + results + ")");
 		}
 	}
 
@@ -151,6 +153,17 @@ public class RangerDefaultAuditHandler implements RangerAuditHandler {
 		}
 
 		if(auditEvent != null) {
+			if (auditEvent.getAgentHostname() == null || auditEvent.getAgentHostname().isEmpty()) {
+				auditEvent.setAgentHostname(MiscUtil.getHostname());
+			}
+
+			if (auditEvent.getLogType() == null || auditEvent.getLogType().isEmpty()) {
+				auditEvent.setLogType("RangerAudit");
+			}
+
+			if (auditEvent.getEventId() == null || auditEvent.getEventId().isEmpty()) {
+				auditEvent.setEventId(MiscUtil.generateUniqueId());
+			}
 			AuditProviderFactory.getAuditProvider().log(auditEvent);
 		}
 

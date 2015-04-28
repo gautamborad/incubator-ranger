@@ -53,7 +53,6 @@ import org.apache.ranger.common.annotation.RangerAnnotationJSMgrName;
 import org.apache.ranger.plugin.model.RangerPolicy;
 import org.apache.ranger.plugin.model.RangerService;
 import org.apache.ranger.plugin.util.GrantRevokeRequest;
-import org.apache.ranger.service.AbstractBaseResourceService;
 import org.apache.ranger.service.XAccessAuditService;
 import org.apache.ranger.service.XAgentService;
 import org.apache.ranger.service.XAssetService;
